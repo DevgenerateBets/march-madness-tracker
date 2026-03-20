@@ -417,6 +417,42 @@ function teamRowStyle(isEliminated) {
   };
 }
 
+function getOwnerTeamNameForSchool(teamName) {
+  for (const owner of initialOwners) {
+    for (const pick of owner.picks) {
+      if (teamMatchesPick(pick.team, teamName)) {
+        return owner.teamName;
+      }
+    }
+  }
+  return "";
+}
+
+function formatBracketTeamLabel(teamName) {
+  const draftedBy = getOwnerTeamNameForSchool(teamName);
+  return draftedBy ? `${teamName} (${draftedBy})` : teamName;
+}
+
+function getRegionGames(games, region, round) {
+  return games.filter((game) => game.region === region && game.round === round);
+}
+
+function bracketTeamStyle(isWinner, isEliminated) {
+  return {
+    padding: "10px 12px",
+    borderRadius: 10,
+    border: isWinner ? "1px solid #111827" : "1px solid #d1d5db",
+    background: isWinner ? "#111827" : "#ffffff",
+    color: isWinner ? "#ffffff" : "#111827",
+    fontWeight: 600,
+    fontSize: 14,
+    lineHeight: 1.3,
+    opacity: isEliminated ? 0.55 : 1,
+    position: "relative",
+    overflow: "hidden",
+  };
+}
+
 export default function App() {
   const [tab, setTab] = useState("leaderboard");
   const [search, setSearch] = useState("");
@@ -710,7 +746,7 @@ export default function App() {
             gap: 8,
           }}
         >
-          {["leaderboard", "bracket", "trash-talk", "rules"].map((key) => (
+          {["leaderboard", "bracket", "bracket-map", "trash-talk", "rules"].map((key) => (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -720,6 +756,8 @@ export default function App() {
                 ? "Leaderboard"
                 : key === "bracket"
                 ? "Bracket"
+                : key === "bracket-map"
+                ? "Bracket Map"
                 : key === "trash-talk"
                 ? "Trash Talk"
                 : "Rules"}
@@ -1096,6 +1134,234 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {tab === "bracket-map" && (
+  <div style={cardStyle()}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        gap: 12,
+        alignItems: isMobile ? "flex-start" : "center",
+        flexDirection: isMobile ? "column" : "row",
+        marginBottom: 16,
+      }}
+    >
+      <div>
+        <h2 style={{ margin: 0 }}>Full Bracket Map</h2>
+        <div style={{ color: "#475569", marginTop: 6, fontSize: 14 }}>
+          NCAA teams are shown with the drafted pool team in parentheses.
+        </div>
+      </div>
+      <div style={{ fontSize: 14, color: "#475569" }}>
+        Example: <strong>Houston (Rehabilitators)</strong>
+      </div>
+    </div>
+
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))",
+        gap: 16,
+      }}
+    >
+      {["East", "West", "South", "Midwest"].map((region) => (
+        <div
+          key={region}
+          style={{
+            border: "1px solid #e5e7eb",
+            borderRadius: 16,
+            padding: 14,
+            background: "#f8fafc",
+          }}
+        >
+          <h3 style={{ marginTop: 0, marginBottom: 12 }}>{region}</h3>
+
+          {["r64", "r32", "r16"].map((round) => {
+            const roundGames = getRegionGames(games, region, round);
+            if (!roundGames.length) return null;
+
+            return (
+              <div key={`${region}-${round}`} style={{ marginBottom: 16 }}>
+                <div
+                  style={{
+                    fontSize: 12,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    color: "#64748b",
+                    marginBottom: 8,
+                  }}
+                >
+                  {roundLabels[round]}
+                </div>
+
+                <div style={{ display: "grid", gap: 10 }}>
+                  {roundGames.map((game) => {
+                    const teamAEliminated =
+                      game.winner && !teamMatchesPick(game.teamA, game.winner);
+                    const teamBEliminated =
+                      game.winner && !teamMatchesPick(game.teamB, game.winner);
+
+                    return (
+                      <div
+                        key={game.id}
+                        style={{
+                          border: "1px solid #e5e7eb",
+                          borderRadius: 12,
+                          padding: 10,
+                          background: "white",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "grid",
+                            gap: 8,
+                          }}
+                        >
+                          <div style={bracketTeamStyle(game.winner === game.teamA, teamAEliminated)}>
+                            {formatBracketTeamLabel(game.teamA)} ({game.seedA})
+                            {teamAEliminated && (
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  left: "-10%",
+                                  top: "50%",
+                                  width: "120%",
+                                  height: 2,
+                                  background: "#dc2626",
+                                  transform: "rotate(-12deg)",
+                                }}
+                              />
+                            )}
+                          </div>
+
+                          <div style={bracketTeamStyle(game.winner === game.teamB, teamBEliminated)}>
+                            {formatBracketTeamLabel(game.teamB)} ({game.seedB})
+                            {teamBEliminated && (
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  left: "-10%",
+                                  top: "50%",
+                                  width: "120%",
+                                  height: 2,
+                                  background: "#dc2626",
+                                  transform: "rotate(-12deg)",
+                                }}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+
+    <div style={{ marginTop: 20 }}>
+      <div
+        style={{
+          fontSize: 12,
+          textTransform: "uppercase",
+          letterSpacing: "0.04em",
+          color: "#64748b",
+          marginBottom: 8,
+        }}
+      >
+        Cross-region rounds
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+          gap: 12,
+        }}
+      >
+        {["r8", "r4", "champ"].map((round) => {
+          const roundGames = games.filter((game) => game.round === round);
+          if (!roundGames.length) return null;
+
+          return (
+            <div
+              key={round}
+              style={{
+                border: "1px solid #e5e7eb",
+                borderRadius: 12,
+                padding: 12,
+                background: "#f8fafc",
+              }}
+            >
+              <div style={{ fontWeight: 700, marginBottom: 10 }}>{roundLabels[round]}</div>
+
+              <div style={{ display: "grid", gap: 10 }}>
+                {roundGames.map((game) => {
+                  const teamAEliminated =
+                    game.winner && !teamMatchesPick(game.teamA, game.winner);
+                  const teamBEliminated =
+                    game.winner && !teamMatchesPick(game.teamB, game.winner);
+
+                  return (
+                    <div
+                      key={game.id}
+                      style={{
+                        border: "1px solid #e5e7eb",
+                        borderRadius: 12,
+                        padding: 10,
+                        background: "white",
+                      }}
+                    >
+                      <div style={{ display: "grid", gap: 8 }}>
+                        <div style={bracketTeamStyle(game.winner === game.teamA, teamAEliminated)}>
+                          {formatBracketTeamLabel(game.teamA)} ({game.seedA})
+                          {teamAEliminated && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                left: "-10%",
+                                top: "50%",
+                                width: "120%",
+                                height: 2,
+                                background: "#dc2626",
+                                transform: "rotate(-12deg)",
+                              }}
+                            />
+                          )}
+                        </div>
+
+                        <div style={bracketTeamStyle(game.winner === game.teamB, teamBEliminated)}>
+                          {formatBracketTeamLabel(game.teamB)} ({game.seedB})
+                          {teamBEliminated && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                left: "-10%",
+                                top: "50%",
+                                width: "120%",
+                                height: 2,
+                                background: "#dc2626",
+                                transform: "rotate(-12deg)",
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+)}
 
         {tab === "trash-talk" && (
           <div
