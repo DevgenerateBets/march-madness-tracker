@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "march-madness-full-tracker-v3";
+const STORAGE_KEY = "march-madness-full-tracker-v4";
 
 const initialOwners = [
   {
@@ -137,7 +137,6 @@ const roundLabels = {
 };
 
 const defaultGames = [
-  // EAST
   { id: 1, round: "r64", region: "East", teamA: "Duke", seedA: 1, teamB: "Siena", seedB: 16, winner: "Duke" },
   { id: 2, round: "r64", region: "East", teamA: "Ohio State", seedA: 8, teamB: "TCU", seedB: 9, winner: "TCU" },
   { id: 3, round: "r64", region: "East", teamA: "St. John's", seedA: 5, teamB: "Northern Iowa", seedB: 12, winner: "" },
@@ -147,7 +146,6 @@ const defaultGames = [
   { id: 7, round: "r64", region: "East", teamA: "UCLA", seedA: 7, teamB: "UCF", seedB: 10, winner: "" },
   { id: 8, round: "r64", region: "East", teamA: "UConn", seedA: 2, teamB: "Furman", seedB: 15, winner: "" },
 
-  // WEST
   { id: 9, round: "r64", region: "West", teamA: "Arizona", seedA: 1, teamB: "Long Island", seedB: 16, winner: "" },
   { id: 10, round: "r64", region: "West", teamA: "Villanova", seedA: 8, teamB: "Utah State", seedB: 9, winner: "" },
   { id: 11, round: "r64", region: "West", teamA: "Wisconsin", seedA: 5, teamB: "High Point", seedB: 12, winner: "High Point" },
@@ -157,7 +155,6 @@ const defaultGames = [
   { id: 15, round: "r64", region: "West", teamA: "Miami (FL)", seedA: 7, teamB: "Missouri", seedB: 10, winner: "" },
   { id: 16, round: "r64", region: "West", teamA: "Purdue", seedA: 2, teamB: "Queens N.C.", seedB: 15, winner: "" },
 
-  // SOUTH
   { id: 17, round: "r64", region: "South", teamA: "Florida", seedA: 1, teamB: "Prairie View", seedB: 16, winner: "" },
   { id: 18, round: "r64", region: "South", teamA: "Clemson", seedA: 8, teamB: "Iowa", seedB: 9, winner: "" },
   { id: 19, round: "r64", region: "South", teamA: "Vanderbilt", seedA: 5, teamB: "McNeese", seedB: 12, winner: "Vanderbilt" },
@@ -167,7 +164,6 @@ const defaultGames = [
   { id: 23, round: "r64", region: "South", teamA: "Saint Mary's", seedA: 7, teamB: "Texas A&M", seedB: 10, winner: "Texas A&M" },
   { id: 24, round: "r64", region: "South", teamA: "Houston", seedA: 2, teamB: "Idaho", seedB: 15, winner: "Houston" },
 
-  // MIDWEST
   { id: 25, round: "r64", region: "Midwest", teamA: "Michigan", seedA: 1, teamB: "Howard", seedB: 16, winner: "Michigan" },
   { id: 26, round: "r64", region: "Midwest", teamA: "Georgia", seedA: 8, teamB: "St. Louis", seedB: 9, winner: "" },
   { id: 27, round: "r64", region: "Midwest", teamA: "Texas Tech", seedA: 5, teamB: "Akron", seedB: 12, winner: "" },
@@ -177,7 +173,6 @@ const defaultGames = [
   { id: 31, round: "r64", region: "Midwest", teamA: "Kentucky", seedA: 7, teamB: "Santa Clara", seedB: 10, winner: "Kentucky" },
   { id: 32, round: "r64", region: "Midwest", teamA: "Iowa State", seedA: 2, teamB: "Tennessee State", seedB: 15, winner: "" },
 
-  // placeholders
   { id: 33, round: "r32", region: "East", teamA: "Duke", seedA: 1, teamB: "TCU", seedB: 9, winner: "" },
   { id: 34, round: "r32", region: "East", teamA: "Louisville", seedA: 6, teamB: "Michigan State", seedB: 3, winner: "" },
   { id: 35, round: "r32", region: "West", teamA: "Arizona", seedA: 1, teamB: "High Point", seedB: 12, winner: "" },
@@ -366,9 +361,9 @@ function formatLastUpdated(value) {
   }
 }
 
-function buttonStyle(active) {
+function buttonStyle(active, isMobile = false) {
   return {
-    padding: "10px 12px",
+    padding: isMobile ? "14px 12px" : "10px 12px",
     borderRadius: 10,
     border: active ? "1px solid #111827" : "1px solid #d1d5db",
     background: active ? "#111827" : "white",
@@ -376,6 +371,7 @@ function buttonStyle(active) {
     cursor: "pointer",
     textAlign: "left",
     fontWeight: 600,
+    width: isMobile ? "100%" : "auto",
   };
 }
 
@@ -394,7 +390,9 @@ function teamRowStyle(isEliminated) {
     return {
       display: "flex",
       justifyContent: "space-between",
+      alignItems: "flex-start",
       gap: 12,
+      flexWrap: "wrap",
       background: "#f8fafc",
       border: "1px solid #e5e7eb",
       borderRadius: 10,
@@ -406,7 +404,9 @@ function teamRowStyle(isEliminated) {
   return {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: 12,
+    flexWrap: "wrap",
     background:
       "linear-gradient(135deg, transparent 47%, #dc2626 47%, #dc2626 53%, transparent 53%), #f8fafc",
     border: "1px solid #fecaca",
@@ -427,6 +427,13 @@ export default function App() {
   const [trashTalkEntries, setTrashTalkEntries] = useState(defaultTrashTalk);
   const [lastUpdated, setLastUpdated] = useState("");
   const [isLocked, setIsLocked] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     try {
@@ -597,11 +604,11 @@ export default function App() {
         background: "#f8fafc",
         color: "#0f172a",
         fontFamily: "Arial, sans-serif",
-        padding: 20,
+        padding: isMobile ? 10 : 20,
       }}
     >
       <div style={{ maxWidth: 1300, margin: "0 auto" }}>
-        <div style={{ ...cardStyle(), marginBottom: 20 }}>
+        <div style={{ ...cardStyle(), marginBottom: 16 }}>
           <div
             style={{
               display: "flex",
@@ -610,9 +617,9 @@ export default function App() {
               flexWrap: "wrap",
             }}
           >
-            <div>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 28 }}>🏀</span>
+                <span style={{ fontSize: isMobile ? 24 : 28 }}>🏀</span>
                 <span
                   style={{
                     background: "#111827",
@@ -649,10 +656,10 @@ export default function App() {
                 </span>
               </div>
 
-              <h1 style={{ margin: "0 0 8px", fontSize: 34 }}>
+              <h1 style={{ margin: "0 0 8px", fontSize: isMobile ? 24 : 34, lineHeight: 1.15 }}>
                 March Madness Tourney Dashboard
               </h1>
-              <p style={{ margin: 0, color: "#475569" }}>
+              <p style={{ margin: 0, color: "#475569", fontSize: isMobile ? 14 : 16 }}>
                 Click winners manually and let the tracker calculate the scoring.
               </p>
               <div style={{ marginTop: 10, fontSize: 14, color: "#475569" }}>
@@ -663,29 +670,30 @@ export default function App() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(4, minmax(120px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
                 gap: 12,
-                minWidth: 420,
+                minWidth: 0,
                 flex: 1,
+                width: "100%",
               }}
             >
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Buy-in</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>$200</div>
+                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>$200</div>
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Games tracked</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>
+                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>
                   {totalTrackedGames}/{games.length}
                 </div>
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Scoring formula</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>Round + upset</div>
+                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>Round + upset</div>
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Champion holder</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>
+                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>
                   {championOwner ? championOwner.teamName : "—"}
                 </div>
               </div>
@@ -696,17 +704,17 @@ export default function App() {
         <div
           style={{
             ...cardStyle(),
-            marginBottom: 20,
-            display: "flex",
+            marginBottom: 16,
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, max-content)",
             gap: 8,
-            flexWrap: "wrap",
           }}
         >
           {["leaderboard", "bracket", "trash-talk", "rules"].map((key) => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              style={buttonStyle(tab === key)}
+              style={buttonStyle(tab === key, isMobile)}
             >
               {key === "leaderboard"
                 ? "Leaderboard"
@@ -724,9 +732,9 @@ export default function App() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(4, minmax(200px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: 12,
-                marginBottom: 20,
+                marginBottom: 16,
               }}
             >
               <div style={cardStyle()}>
@@ -767,15 +775,16 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ ...cardStyle(), marginBottom: 20 }}>
+            <div style={{ ...cardStyle(), marginBottom: 16 }}>
               <div
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
                   gap: 12,
-                  alignItems: "center",
+                  alignItems: isMobile ? "stretch" : "center",
                   flexWrap: "wrap",
                   marginBottom: 16,
+                  flexDirection: isMobile ? "column" : "row",
                 }}
               >
                 <h2 style={{ margin: 0 }}>Standings</h2>
@@ -787,13 +796,15 @@ export default function App() {
                     padding: "10px 12px",
                     border: "1px solid #d1d5db",
                     borderRadius: 10,
-                    minWidth: 260,
+                    minWidth: isMobile ? 0 : 260,
+                    width: isMobile ? "100%" : "auto",
+                    boxSizing: "border-box",
                   }}
                 />
               </div>
 
               <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <table style={{ width: "100%", minWidth: 900, borderCollapse: "collapse" }}>
                   <thead>
                     <tr style={{ color: "#64748b", textAlign: "left" }}>
                       <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Rank</th>
@@ -854,6 +865,7 @@ export default function App() {
                       justifyContent: "space-between",
                       gap: 10,
                       marginBottom: 10,
+                      flexWrap: "wrap",
                     }}
                   >
                     <div>
@@ -879,13 +891,13 @@ export default function App() {
 
                     return (
                       <div key={pick.team} style={teamRowStyle(progress.eliminated)}>
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{pick.team}</div>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontWeight: 600, wordBreak: "break-word" }}>{pick.team}</div>
                           <div style={{ fontSize: 12, color: "#64748b" }}>
                             Seed {pick.seed} • {getTeamStatusLabel(pick.team, games)}
                           </div>
                         </div>
-                        <div style={{ fontWeight: 700 }}>
+                        <div style={{ fontWeight: 700, whiteSpace: "nowrap" }}>
                           {scorePick(results[owner.teamName]?.[pick.team]).total} pts
                         </div>
                       </div>
@@ -901,7 +913,7 @@ export default function App() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "minmax(0, 2fr) minmax(320px, 1fr)",
+              gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 2fr) minmax(320px, 1fr)",
               gap: 16,
             }}
           >
@@ -955,7 +967,7 @@ export default function App() {
                         <div
                           style={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                            gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))",
                             gap: 10,
                           }}
                         >
@@ -963,7 +975,7 @@ export default function App() {
                             disabled={isLocked}
                             onClick={() => updateGameWinner(game.id, game.teamA)}
                             style={{
-                              ...buttonStyle(game.winner === game.teamA),
+                              ...buttonStyle(game.winner === game.teamA, isMobile),
                               cursor: isLocked ? "not-allowed" : "pointer",
                               opacity: isLocked ? 0.7 : 1,
                             }}
@@ -976,7 +988,7 @@ export default function App() {
                             disabled={isLocked}
                             onClick={() => updateGameWinner(game.id, game.teamB)}
                             style={{
-                              ...buttonStyle(game.winner === game.teamB),
+                              ...buttonStyle(game.winner === game.teamB, isMobile),
                               cursor: isLocked ? "not-allowed" : "pointer",
                               opacity: isLocked ? 0.7 : 1,
                             }}
@@ -1013,21 +1025,28 @@ export default function App() {
                   : "Click the selected winner again to clear that game."}
               </div>
 
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-                <button onClick={exportData} style={buttonStyle(false)}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                  gap: 10,
+                  marginBottom: 16,
+                }}
+              >
+                <button onClick={exportData} style={buttonStyle(false, isMobile)}>
                   Export data
                 </button>
-                <button onClick={() => generateShareLink(true)} style={buttonStyle(false)}>
+                <button onClick={() => generateShareLink(true)} style={buttonStyle(false, isMobile)}>
                   Generate Share Link
                 </button>
-                <button onClick={() => generateShareLink(false)} style={buttonStyle(false)}>
+                <button onClick={() => generateShareLink(false)} style={buttonStyle(false, isMobile)}>
                   Generate Editable Link
                 </button>
                 <button
                   disabled={isLocked}
                   onClick={resetAll}
                   style={{
-                    ...buttonStyle(false),
+                    ...buttonStyle(false, isMobile),
                     borderColor: "#dc2626",
                     color: "#dc2626",
                     cursor: isLocked ? "not-allowed" : "pointer",
@@ -1039,11 +1058,18 @@ export default function App() {
               </div>
 
               <div style={{ marginBottom: 12, fontWeight: 700 }}>View mode</div>
-              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
-                <button onClick={() => setViewMode("public")} style={buttonStyle(viewMode === "public")}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr",
+                  gap: 10,
+                  marginBottom: 16,
+                }}
+              >
+                <button onClick={() => setViewMode("public")} style={buttonStyle(viewMode === "public", isMobile)}>
                   Public
                 </button>
-                <button onClick={() => setViewMode("admin")} style={buttonStyle(viewMode === "admin")}>
+                <button onClick={() => setViewMode("admin")} style={buttonStyle(viewMode === "admin", isMobile)}>
                   Admin
                 </button>
               </div>
@@ -1051,11 +1077,17 @@ export default function App() {
               {!isLocked && (
                 <>
                   <div style={{ marginBottom: 12, fontWeight: 700 }}>Local lock toggle</div>
-                  <div style={{ display: "flex", gap: 10 }}>
-                    <button onClick={() => setIsLocked(false)} style={buttonStyle(!isLocked)}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr",
+                      gap: 10,
+                    }}
+                  >
+                    <button onClick={() => setIsLocked(false)} style={buttonStyle(!isLocked, isMobile)}>
                       Unlocked
                     </button>
-                    <button onClick={() => setIsLocked(true)} style={buttonStyle(isLocked)}>
+                    <button onClick={() => setIsLocked(true)} style={buttonStyle(isLocked, isMobile)}>
                       Locked
                     </button>
                   </div>
@@ -1069,7 +1101,7 @@ export default function App() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "minmax(280px, 1fr) minmax(0, 1.2fr)",
+              gridTemplateColumns: isMobile ? "1fr" : "minmax(280px, 1fr) minmax(0, 1.2fr)",
               gap: 16,
             }}
           >
@@ -1083,10 +1115,11 @@ export default function App() {
                   onChange={(e) => setSelectedTeam(e.target.value)}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px",
                     borderRadius: 10,
                     border: "1px solid #d1d5db",
                     opacity: isLocked ? 0.7 : 1,
+                    boxSizing: "border-box",
                   }}
                 >
                   {initialOwners.map((owner) => (
@@ -1108,7 +1141,7 @@ export default function App() {
                 placeholder="Enter a beautiful, disrespectful one-liner"
                 style={{
                   width: "100%",
-                  padding: "10px 12px",
+                  padding: "12px",
                   border: "1px solid #d1d5db",
                   borderRadius: 10,
                   marginBottom: 10,
@@ -1121,7 +1154,7 @@ export default function App() {
                 disabled={isLocked}
                 onClick={addTrashTalk}
                 style={{
-                  ...buttonStyle(false),
+                  ...buttonStyle(false, isMobile),
                   cursor: isLocked ? "not-allowed" : "pointer",
                   opacity: isLocked ? 0.6 : 1,
                 }}
@@ -1152,11 +1185,12 @@ export default function App() {
                         justifyContent: "space-between",
                         gap: 12,
                         alignItems: "flex-start",
+                        flexWrap: "wrap",
                       }}
                     >
-                      <div>
+                      <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ fontWeight: 700 }}>{entry.teamName}</div>
-                        <div style={{ color: "#334155", marginTop: 6 }}>
+                        <div style={{ color: "#334155", marginTop: 6, wordBreak: "break-word" }}>
                           “{entry.text}”
                         </div>
                       </div>
@@ -1165,9 +1199,10 @@ export default function App() {
                         disabled={isLocked}
                         onClick={() => voteTrashTalk(trashTalkEntries.indexOf(entry))}
                         style={{
-                          ...buttonStyle(false),
+                          ...buttonStyle(false, isMobile),
                           cursor: isLocked ? "not-allowed" : "pointer",
                           opacity: isLocked ? 0.6 : 1,
+                          width: isMobile ? "100%" : "auto",
                         }}
                       >
                         ✅ {entry.votes}
@@ -1183,7 +1218,7 @@ export default function App() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(2, minmax(280px, 1fr))",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(280px, 1fr))",
               gap: 16,
             }}
           >
@@ -1215,7 +1250,7 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ ...cardStyle(), gridColumn: "1 / -1" }}>
+            <div style={{ ...cardStyle(), gridColumn: isMobile ? "auto" : "1 / -1" }}>
               <h2 style={{ marginTop: 0 }}>What this version includes</h2>
               <div
                 style={{
@@ -1234,6 +1269,7 @@ export default function App() {
                   "Shareable snapshot links",
                   "Last updated time",
                   "Lock mode for view-only sharing",
+                  "Mobile-friendly layout",
                   "Trash-talk submission and voting",
                 ].map((item) => (
                   <div
