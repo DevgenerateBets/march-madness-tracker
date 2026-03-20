@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "march-madness-full-tracker-v2";
+const STORAGE_KEY = "march-madness-full-tracker-v3";
 
 const initialOwners = [
   {
@@ -142,18 +142,18 @@ const defaultGames = [
   { id: 2, round: "r64", region: "East", teamA: "Ohio State", seedA: 8, teamB: "TCU", seedB: 9, winner: "TCU" },
   { id: 3, round: "r64", region: "East", teamA: "St. John's", seedA: 5, teamB: "Northern Iowa", seedB: 12, winner: "" },
   { id: 4, round: "r64", region: "East", teamA: "Kansas", seedA: 4, teamB: "Cal Baptist", seedB: 13, winner: "" },
-  { id: 5, round: "r64", region: "East", teamA: "Louisville", seedA: 6, teamB: "South Florida", seedB: 11, winner: "Louisville" },
-  { id: 6, round: "r64", region: "East", teamA: "Michigan State", seedA: 3, teamB: "North Dakota State", seedB: 14, winner: "Michigan State" },
+  { id: 5, round: "r64", region: "East", teamA: "Louisville", seedA: 6, teamB: "South Florida", seedB: 11, winner: "" },
+  { id: 6, round: "r64", region: "East", teamA: "Michigan State", seedA: 3, teamB: "North Dakota State", seedB: 14, winner: "" },
   { id: 7, round: "r64", region: "East", teamA: "UCLA", seedA: 7, teamB: "UCF", seedB: 10, winner: "" },
   { id: 8, round: "r64", region: "East", teamA: "UConn", seedA: 2, teamB: "Furman", seedB: 15, winner: "" },
 
   // WEST
-  { id: 9, round: "r64", region: "West", teamA: "Arizona", seedA: 1, teamB: "Long Island", seedB: 16, winner: "Arizona" },
+  { id: 9, round: "r64", region: "West", teamA: "Arizona", seedA: 1, teamB: "Long Island", seedB: 16, winner: "" },
   { id: 10, round: "r64", region: "West", teamA: "Villanova", seedA: 8, teamB: "Utah State", seedB: 9, winner: "" },
   { id: 11, round: "r64", region: "West", teamA: "Wisconsin", seedA: 5, teamB: "High Point", seedB: 12, winner: "High Point" },
-  { id: 12, round: "r64", region: "West", teamA: "Arkansas", seedA: 4, teamB: "Hawaii", seedB: 13, winner: "Arkansas" },
-  { id: 13, round: "r64", region: "West", teamA: "BYU", seedA: 6, teamB: "Texas", seedB: 11, winner: "Texas" },
-  { id: 14, round: "r64", region: "West", teamA: "Gonzaga", seedA: 3, teamB: "Kennesaw State", seedB: 14, winner: "Gonzaga" },
+  { id: 12, round: "r64", region: "West", teamA: "Arkansas", seedA: 4, teamB: "Hawaii", seedB: 13, winner: "" },
+  { id: 13, round: "r64", region: "West", teamA: "BYU", seedA: 6, teamB: "Texas", seedB: 11, winner: "" },
+  { id: 14, round: "r64", region: "West", teamA: "Gonzaga", seedA: 3, teamB: "Kennesaw State", seedB: 14, winner: "" },
   { id: 15, round: "r64", region: "West", teamA: "Miami (FL)", seedA: 7, teamB: "Missouri", seedB: 10, winner: "" },
   { id: 16, round: "r64", region: "West", teamA: "Purdue", seedA: 2, teamB: "Queens N.C.", seedB: 15, winner: "" },
 
@@ -161,7 +161,7 @@ const defaultGames = [
   { id: 17, round: "r64", region: "South", teamA: "Florida", seedA: 1, teamB: "Prairie View", seedB: 16, winner: "" },
   { id: 18, round: "r64", region: "South", teamA: "Clemson", seedA: 8, teamB: "Iowa", seedB: 9, winner: "" },
   { id: 19, round: "r64", region: "South", teamA: "Vanderbilt", seedA: 5, teamB: "McNeese", seedB: 12, winner: "Vanderbilt" },
-  { id: 20, round: "r64", region: "South", teamA: "Nebraska", seedA: 4, teamB: "Troy", seedB: 13, winner: "Nebraska" },
+  { id: 20, round: "r64", region: "South", teamA: "Nebraska", seedA: 4, teamB: "Troy", seedB: 13, winner: "" },
   { id: 21, round: "r64", region: "South", teamA: "North Carolina", seedA: 6, teamB: "VCU", seedB: 11, winner: "VCU" },
   { id: 22, round: "r64", region: "South", teamA: "Illinois", seedA: 3, teamB: "Penn", seedB: 14, winner: "Illinois" },
   { id: 23, round: "r64", region: "South", teamA: "Saint Mary's", seedA: 7, teamB: "Texas A&M", seedB: 10, winner: "Texas A&M" },
@@ -169,15 +169,15 @@ const defaultGames = [
 
   // MIDWEST
   { id: 25, round: "r64", region: "Midwest", teamA: "Michigan", seedA: 1, teamB: "Howard", seedB: 16, winner: "Michigan" },
-  { id: 26, round: "r64", region: "Midwest", teamA: "Georgia", seedA: 8, teamB: "St. Louis", seedB: 9, winner: "St. Louis" },
-  { id: 27, round: "r64", region: "Midwest", teamA: "Texas Tech", seedA: 5, teamB: "Akron", seedB: 12, winner: "Texas Tech" },
+  { id: 26, round: "r64", region: "Midwest", teamA: "Georgia", seedA: 8, teamB: "St. Louis", seedB: 9, winner: "" },
+  { id: 27, round: "r64", region: "Midwest", teamA: "Texas Tech", seedA: 5, teamB: "Akron", seedB: 12, winner: "" },
   { id: 28, round: "r64", region: "Midwest", teamA: "Alabama", seedA: 4, teamB: "Hofstra", seedB: 13, winner: "" },
   { id: 29, round: "r64", region: "Midwest", teamA: "Tennessee", seedA: 6, teamB: "Miami (OH)", seedB: 11, winner: "" },
-  { id: 30, round: "r64", region: "Midwest", teamA: "Virginia", seedA: 3, teamB: "Wright State", seedB: 14, winner: "Virginia" },
+  { id: 30, round: "r64", region: "Midwest", teamA: "Virginia", seedA: 3, teamB: "Wright State", seedB: 14, winner: "" },
   { id: 31, round: "r64", region: "Midwest", teamA: "Kentucky", seedA: 7, teamB: "Santa Clara", seedB: 10, winner: "Kentucky" },
   { id: 32, round: "r64", region: "Midwest", teamA: "Iowa State", seedA: 2, teamB: "Tennessee State", seedB: 15, winner: "" },
 
-  // Round of 32 placeholders shown on bracket
+  // placeholders
   { id: 33, round: "r32", region: "East", teamA: "Duke", seedA: 1, teamB: "TCU", seedB: 9, winner: "" },
   { id: 34, round: "r32", region: "East", teamA: "Louisville", seedA: 6, teamB: "Michigan State", seedB: 3, winner: "" },
   { id: 35, round: "r32", region: "West", teamA: "Arizona", seedA: 1, teamB: "High Point", seedB: 12, winner: "" },
@@ -186,8 +186,6 @@ const defaultGames = [
   { id: 38, round: "r32", region: "South", teamA: "VCU", seedA: 11, teamB: "Illinois", seedB: 3, winner: "" },
   { id: 39, round: "r32", region: "South", teamA: "Texas A&M", seedA: 10, teamB: "Houston", seedB: 2, winner: "" },
   { id: 40, round: "r32", region: "Midwest", teamA: "Michigan", seedA: 1, teamB: "St. Louis", seedB: 9, winner: "" },
-
-  // Later placeholders
   { id: 41, round: "r16", region: "Final Four Path", teamA: "Florida", seedA: 1, teamB: "Duke", seedB: 1, winner: "" },
   { id: 42, round: "champ", region: "Finals", teamA: "Florida", seedA: 1, teamB: "Duke", seedB: 1, winner: "" },
 ];
@@ -308,9 +306,10 @@ function buildResultsFromGames(games) {
 }
 
 function getTeamProgress(teamName, games) {
-  const normalizedTeam = normalizeName(teamName);
+  const options = splitPickOptions(teamName);
   let lastRoundReached = null;
   let eliminated = false;
+  let appeared = false;
 
   const orderedGames = [...games].sort(
     (a, b) => roundOrder.indexOf(a.round) - roundOrder.indexOf(b.round)
@@ -320,27 +319,51 @@ function getTeamProgress(teamName, games) {
     const teamA = normalizeName(game.teamA);
     const teamB = normalizeName(game.teamB);
 
-    if (teamA !== normalizedTeam && teamB !== normalizedTeam) continue;
+    const isInGame = options.includes(teamA) || options.includes(teamB);
+    if (!isInGame) continue;
 
+    appeared = true;
     lastRoundReached = game.round;
 
     if (game.winner) {
       const winner = normalizeName(game.winner);
-      if (winner !== normalizedTeam) {
+      if (!options.includes(winner)) {
         eliminated = true;
         break;
       }
     }
   }
 
-  return { lastRoundReached, eliminated };
+  return { lastRoundReached, eliminated, appeared };
 }
 
 function getTeamStatusLabel(teamName, games) {
   const progress = getTeamProgress(teamName, games);
   if (progress.eliminated) return "Eliminated";
   if (progress.lastRoundReached) return `Alive (${roundLabels[progress.lastRoundReached]})`;
+  if (progress.appeared) return "Alive";
   return "Not yet in tracked games";
+}
+
+function encodeState(state) {
+  return btoa(encodeURIComponent(JSON.stringify(state)));
+}
+
+function decodeState(encoded) {
+  try {
+    return JSON.parse(decodeURIComponent(atob(encoded)));
+  } catch {
+    return null;
+  }
+}
+
+function formatLastUpdated(value) {
+  if (!value) return "Not updated yet";
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return value;
+  }
 }
 
 function buttonStyle(active) {
@@ -402,15 +425,32 @@ export default function App() {
   const [games, setGames] = useState(defaultGames);
   const [trashTalkText, setTrashTalkText] = useState("");
   const [trashTalkEntries, setTrashTalkEntries] = useState(defaultTrashTalk);
+  const [lastUpdated, setLastUpdated] = useState("");
+  const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const saved = JSON.parse(raw);
-      if (saved.games) setGames(saved.games);
-      if (saved.viewMode) setViewMode(saved.viewMode);
-      if (saved.trashTalkEntries) setTrashTalkEntries(saved.trashTalkEntries);
+      const params = new URLSearchParams(window.location.search);
+      const shared = params.get("data");
+      const lockParam = params.get("lock");
+
+      if (shared) {
+        const decoded = decodeState(shared);
+        if (decoded?.games) setGames(decoded.games);
+        if (decoded?.trashTalkEntries) setTrashTalkEntries(decoded.trashTalkEntries);
+        if (decoded?.lastUpdated) setLastUpdated(decoded.lastUpdated);
+      } else {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const saved = JSON.parse(raw);
+          if (saved.games) setGames(saved.games);
+          if (saved.viewMode) setViewMode(saved.viewMode);
+          if (saved.trashTalkEntries) setTrashTalkEntries(saved.trashTalkEntries);
+          if (saved.lastUpdated) setLastUpdated(saved.lastUpdated);
+        }
+      }
+
+      if (lockParam === "1") setIsLocked(true);
     } catch (e) {
       console.error("Failed to load saved data", e);
     }
@@ -419,9 +459,9 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ games, viewMode, trashTalkEntries })
+      JSON.stringify({ games, viewMode, trashTalkEntries, lastUpdated })
     );
-  }, [games, viewMode, trashTalkEntries]);
+  }, [games, viewMode, trashTalkEntries, lastUpdated]);
 
   const results = useMemo(() => buildResultsFromGames(games), [games]);
 
@@ -475,7 +515,12 @@ export default function App() {
   const activeOwner =
     initialOwners.find((owner) => owner.teamName === selectedTeam) || initialOwners[0];
 
+  function stampUpdate() {
+    setLastUpdated(new Date().toISOString());
+  }
+
   function updateGameWinner(gameId, winner) {
+    if (isLocked) return;
     setGames((prev) =>
       prev.map((game) =>
         game.id === gameId
@@ -483,16 +528,19 @@ export default function App() {
           : game
       )
     );
+    stampUpdate();
   }
 
   function resetAll() {
+    if (isLocked) return;
     setGames(defaultGames);
     setTrashTalkEntries(defaultTrashTalk);
+    stampUpdate();
   }
 
   function exportData() {
     const blob = new Blob(
-      [JSON.stringify({ games, trashTalkEntries }, null, 2)],
+      [JSON.stringify({ games, trashTalkEntries, lastUpdated }, null, 2)],
       { type: "application/json" }
     );
     const url = URL.createObjectURL(blob);
@@ -504,20 +552,40 @@ export default function App() {
   }
 
   function addTrashTalk() {
+    if (isLocked) return;
     if (!trashTalkText.trim()) return;
     setTrashTalkEntries((prev) => [
       { teamName: activeOwner.teamName, text: trashTalkText.trim(), votes: 0 },
       ...prev,
     ]);
     setTrashTalkText("");
+    stampUpdate();
   }
 
   function voteTrashTalk(entryIndex) {
+    if (isLocked) return;
     setTrashTalkEntries((prev) =>
       prev.map((item, idx) =>
         idx === entryIndex ? { ...item, votes: item.votes + 1 } : item
       )
     );
+    stampUpdate();
+  }
+
+  async function copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("Link copied to clipboard!");
+    } catch {
+      alert(text);
+    }
+  }
+
+  function generateShareLink(locked = true) {
+    const state = { games, trashTalkEntries, lastUpdated };
+    const encoded = encodeState(state);
+    const url = `${window.location.origin}${window.location.pathname}?data=${encoded}${locked ? "&lock=1" : ""}`;
+    copyToClipboard(url);
   }
 
   const totalTrackedGames = games.filter((g) => g.winner).length;
@@ -543,7 +611,7 @@ export default function App() {
             }}
           >
             <div>
-              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 28 }}>🏀</span>
                 <span
                   style={{
@@ -567,6 +635,18 @@ export default function App() {
                 >
                   {viewMode === "public" ? "Public view" : "Admin view"}
                 </span>
+                <span
+                  style={{
+                    border: "1px solid #d1d5db",
+                    borderRadius: 999,
+                    padding: "6px 12px",
+                    fontSize: 12,
+                    background: isLocked ? "#fee2e2" : "#ecfccb",
+                    borderColor: isLocked ? "#fca5a5" : "#bef264",
+                  }}
+                >
+                  {isLocked ? "Locked link" : "Editable"}
+                </span>
               </div>
 
               <h1 style={{ margin: "0 0 8px", fontSize: 34 }}>
@@ -575,6 +655,9 @@ export default function App() {
               <p style={{ margin: 0, color: "#475569" }}>
                 Click winners manually and let the tracker calculate the scoring.
               </p>
+              <div style={{ marginTop: 10, fontSize: 14, color: "#475569" }}>
+                Last updated: <strong>{formatLastUpdated(lastUpdated)}</strong>
+              </div>
             </div>
 
             <div
@@ -674,12 +757,12 @@ export default function App() {
                 </div>
               </div>
               <div style={cardStyle()}>
-                <div style={{ fontSize: 13, color: "#64748b" }}>Main workflow</div>
+                <div style={{ fontSize: 13, color: "#64748b" }}>Share mode</div>
                 <div style={{ fontSize: 20, fontWeight: 700, marginTop: 6 }}>
-                  Just mark winners
+                  Locked share links
                 </div>
                 <div style={{ fontSize: 14, color: "#475569", marginTop: 6 }}>
-                  No live feed needed.
+                  Recipients can view but not edit.
                 </div>
               </div>
             </div>
@@ -818,7 +901,7 @@ export default function App() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "minmax(0, 2fr) minmax(300px, 1fr)",
+              gridTemplateColumns: "minmax(0, 2fr) minmax(320px, 1fr)",
               gap: 16,
             }}
           >
@@ -841,6 +924,7 @@ export default function App() {
                           borderRadius: 14,
                           padding: 14,
                           marginBottom: 12,
+                          opacity: isLocked ? 0.9 : 1,
                         }}
                       >
                         <div
@@ -876,16 +960,26 @@ export default function App() {
                           }}
                         >
                           <button
+                            disabled={isLocked}
                             onClick={() => updateGameWinner(game.id, game.teamA)}
-                            style={buttonStyle(game.winner === game.teamA)}
+                            style={{
+                              ...buttonStyle(game.winner === game.teamA),
+                              cursor: isLocked ? "not-allowed" : "pointer",
+                              opacity: isLocked ? 0.7 : 1,
+                            }}
                           >
                             <div style={{ fontSize: 12, opacity: 0.8 }}>Seed {game.seedA}</div>
                             <div>{game.teamA}</div>
                           </button>
 
                           <button
+                            disabled={isLocked}
                             onClick={() => updateGameWinner(game.id, game.teamB)}
-                            style={buttonStyle(game.winner === game.teamB)}
+                            style={{
+                              ...buttonStyle(game.winner === game.teamB),
+                              cursor: isLocked ? "not-allowed" : "pointer",
+                              opacity: isLocked ? 0.7 : 1,
+                            }}
                           >
                             <div style={{ fontSize: 12, opacity: 0.8 }}>Seed {game.seedB}</div>
                             <div>{game.teamB}</div>
@@ -899,10 +993,13 @@ export default function App() {
             </div>
 
             <div style={cardStyle()}>
-              <h2 style={{ marginTop: 0 }}>Scoring Cheat Sheet</h2>
+              <h2 style={{ marginTop: 0 }}>Controls</h2>
 
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 10 }) }}>
-                Clicking a winner recalculates every owner's score automatically.
+                Last updated: <strong>{formatLastUpdated(lastUpdated)}</strong>
+              </div>
+              <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 10 }) }}>
+                Lock mode: <strong>{isLocked ? "On" : "Off"}</strong>
               </div>
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 10 }) }}>
                 Scoring formula: round base points + (winning seed number - losing seed number) when the underdog wins.
@@ -910,23 +1007,31 @@ export default function App() {
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 10 }) }}>
                 Correct example: 12 over 5 in Round 1 = 2 base points + 7 upset bonus = 9 total points.
               </div>
-              <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 10 }) }}>
-                If there is no upset, the team only gets the base round points.
-              </div>
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 16 }) }}>
-                Click the selected winner again to clear that game.
+                {isLocked
+                  ? "This shared link is locked. View-only mode is active."
+                  : "Click the selected winner again to clear that game."}
               </div>
 
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
                 <button onClick={exportData} style={buttonStyle(false)}>
                   Export data
                 </button>
+                <button onClick={() => generateShareLink(true)} style={buttonStyle(false)}>
+                  Generate Share Link
+                </button>
+                <button onClick={() => generateShareLink(false)} style={buttonStyle(false)}>
+                  Generate Editable Link
+                </button>
                 <button
+                  disabled={isLocked}
                   onClick={resetAll}
                   style={{
                     ...buttonStyle(false),
                     borderColor: "#dc2626",
                     color: "#dc2626",
+                    cursor: isLocked ? "not-allowed" : "pointer",
+                    opacity: isLocked ? 0.6 : 1,
                   }}
                 >
                   Reset demo data
@@ -934,7 +1039,7 @@ export default function App() {
               </div>
 
               <div style={{ marginBottom: 12, fontWeight: 700 }}>View mode</div>
-              <div style={{ display: "flex", gap: 10 }}>
+              <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
                 <button onClick={() => setViewMode("public")} style={buttonStyle(viewMode === "public")}>
                   Public
                 </button>
@@ -942,6 +1047,20 @@ export default function App() {
                   Admin
                 </button>
               </div>
+
+              {!isLocked && (
+                <>
+                  <div style={{ marginBottom: 12, fontWeight: 700 }}>Local lock toggle</div>
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <button onClick={() => setIsLocked(false)} style={buttonStyle(!isLocked)}>
+                      Unlocked
+                    </button>
+                    <button onClick={() => setIsLocked(true)} style={buttonStyle(isLocked)}>
+                      Locked
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -959,6 +1078,7 @@ export default function App() {
 
               <div style={{ marginBottom: 10 }}>
                 <select
+                  disabled={isLocked}
                   value={selectedTeam}
                   onChange={(e) => setSelectedTeam(e.target.value)}
                   style={{
@@ -966,6 +1086,7 @@ export default function App() {
                     padding: "10px 12px",
                     borderRadius: 10,
                     border: "1px solid #d1d5db",
+                    opacity: isLocked ? 0.7 : 1,
                   }}
                 >
                   {initialOwners.map((owner) => (
@@ -981,6 +1102,7 @@ export default function App() {
               </div>
 
               <input
+                disabled={isLocked}
                 value={trashTalkText}
                 onChange={(e) => setTrashTalkText(e.target.value)}
                 placeholder="Enter a beautiful, disrespectful one-liner"
@@ -991,10 +1113,19 @@ export default function App() {
                   borderRadius: 10,
                   marginBottom: 10,
                   boxSizing: "border-box",
+                  opacity: isLocked ? 0.7 : 1,
                 }}
               />
 
-              <button onClick={addTrashTalk} style={buttonStyle(false)}>
+              <button
+                disabled={isLocked}
+                onClick={addTrashTalk}
+                style={{
+                  ...buttonStyle(false),
+                  cursor: isLocked ? "not-allowed" : "pointer",
+                  opacity: isLocked ? 0.6 : 1,
+                }}
+              >
                 Submit line
               </button>
             </div>
@@ -1031,8 +1162,13 @@ export default function App() {
                       </div>
 
                       <button
+                        disabled={isLocked}
                         onClick={() => voteTrashTalk(trashTalkEntries.indexOf(entry))}
-                        style={buttonStyle(false)}
+                        style={{
+                          ...buttonStyle(false),
+                          cursor: isLocked ? "not-allowed" : "pointer",
+                          opacity: isLocked ? 0.6 : 1,
+                        }}
                       >
                         ✅ {entry.votes}
                       </button>
@@ -1095,7 +1231,9 @@ export default function App() {
                   "Champion-holder tie-break logic",
                   "Play-in winner name matching",
                   "Elimination slash on leaderboard",
-                  "Export data",
+                  "Shareable snapshot links",
+                  "Last updated time",
+                  "Lock mode for view-only sharing",
                   "Trash-talk submission and voting",
                 ].map((item) => (
                   <div
