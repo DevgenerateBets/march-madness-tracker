@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "march-madness-full-tracker-v4";
+const STORAGE_KEY = "march-madness-full-tracker-v5";
 
 const initialOwners = [
   {
@@ -181,6 +181,7 @@ const defaultGames = [
   { id: 38, round: "r32", region: "South", teamA: "VCU", seedA: 11, teamB: "Illinois", seedB: 3, winner: "" },
   { id: 39, round: "r32", region: "South", teamA: "Texas A&M", seedA: 10, teamB: "Houston", seedB: 2, winner: "" },
   { id: 40, round: "r32", region: "Midwest", teamA: "Michigan", seedA: 1, teamB: "St. Louis", seedB: 9, winner: "" },
+
   { id: 41, round: "r16", region: "Final Four Path", teamA: "Florida", seedA: 1, teamB: "Duke", seedB: 1, winner: "" },
   { id: 42, round: "champ", region: "Finals", teamA: "Florida", seedA: 1, teamB: "Duke", seedB: 1, winner: "" },
 ];
@@ -433,24 +434,179 @@ function formatBracketTeamLabel(teamName) {
   return draftedBy ? `${teamName} (${draftedBy})` : teamName;
 }
 
-function getRegionGames(games, region, round) {
-  return games.filter((game) => game.region === region && game.round === round);
+function BracketTeamCard({ teamName, seed, isWinner, isEliminated }) {
+  return (
+    <div
+      style={{
+        position: "relative",
+        background: isWinner ? "#111827" : "#ffffff",
+        color: isWinner ? "#ffffff" : "#111827",
+        border: `1px solid ${isWinner ? "#111827" : isEliminated ? "#fecaca" : "#d1d5db"}`,
+        borderRadius: 10,
+        padding: "10px 12px",
+        fontSize: 13,
+        fontWeight: 600,
+        lineHeight: 1.3,
+        minHeight: 54,
+        display: "flex",
+        alignItems: "center",
+        opacity: isEliminated ? 0.72 : 1,
+        overflow: "hidden",
+        boxSizing: "border-box",
+      }}
+    >
+      <div>
+        <div>{formatBracketTeamLabel(teamName)}</div>
+        <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Seed {seed}</div>
+      </div>
+
+      {isEliminated && (
+        <div
+          style={{
+            position: "absolute",
+            left: "-10%",
+            top: "50%",
+            width: "120%",
+            height: 2,
+            background: "#dc2626",
+            transform: "rotate(-12deg)",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+    </div>
+  );
 }
 
-function bracketTeamStyle(isWinner, isEliminated) {
-  return {
-    padding: "10px 12px",
-    borderRadius: 10,
-    border: isWinner ? "1px solid #111827" : "1px solid #d1d5db",
-    background: isWinner ? "#111827" : "#ffffff",
-    color: isWinner ? "#ffffff" : "#111827",
-    fontWeight: 600,
-    fontSize: 14,
-    lineHeight: 1.3,
-    opacity: isEliminated ? 0.55 : 1,
-    position: "relative",
-    overflow: "hidden",
-  };
+function BracketMatch({ game }) {
+  const teamAEliminated = !!game.winner && normalizeName(game.winner) !== normalizeName(game.teamA);
+  const teamBEliminated = !!game.winner && normalizeName(game.winner) !== normalizeName(game.teamB);
+
+  return (
+    <div style={{ display: "grid", gap: 8 }}>
+      <BracketTeamCard
+        teamName={game.teamA}
+        seed={game.seedA}
+        isWinner={normalizeName(game.winner) === normalizeName(game.teamA)}
+        isEliminated={teamAEliminated}
+      />
+      <BracketTeamCard
+        teamName={game.teamB}
+        seed={game.seedB}
+        isWinner={normalizeName(game.winner) === normalizeName(game.teamB)}
+        isEliminated={teamBEliminated}
+      />
+    </div>
+  );
+}
+
+function buildRegionBracketGames(games, region) {
+  const r64 = games.filter((g) => g.region === region && g.round === "r64");
+  const r32 = games.filter((g) => g.region === region && g.round === "r32");
+  const r16 = games.filter((g) => g.region === region && g.round === "r16");
+  const r8 = games.filter((g) => g.region === region && g.round === "r8");
+  return { r64, r32, r16, r8 };
+}
+
+function BracketColumn({ title, games, gapTop = 0 }) {
+  return (
+    <div>
+      <div
+        style={{
+          fontSize: 12,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          color: "#64748b",
+          marginBottom: 10,
+          fontWeight: 700,
+        }}
+      >
+        {title}
+      </div>
+
+      <div style={{ display: "grid", gap: 18, paddingTop: gapTop }}>
+        {games.map((game) => (
+          <BracketMatch key={game.id} game={game} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RegionBracketBoard({ region, games, isMobile }) {
+  const { r64, r32, r16, r8 } = buildRegionBracketGames(games, region);
+  const hasAnyGames = r64.length || r32.length || r16.length || r8.length;
+  if (!hasAnyGames) return null;
+
+  if (isMobile) {
+    return (
+      <div style={cardStyle()}>
+        <h3 style={{ marginTop: 0, marginBottom: 14 }}>{region}</h3>
+        <div style={{ display: "grid", gap: 18 }}>
+          {r64.length > 0 && <BracketColumn title="Round of 64" games={r64} />}
+          {r32.length > 0 && <BracketColumn title="Round of 32" games={r32} />}
+          {r16.length > 0 && <BracketColumn title="Sweet 16" games={r16} />}
+          {r8.length > 0 && <BracketColumn title="Elite 8" games={r8} />}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={cardStyle()}>
+      <h3 style={{ marginTop: 0, marginBottom: 14 }}>{region}</h3>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1.6fr 1.3fr 1fr .9fr",
+          gap: 18,
+          alignItems: "start",
+          overflowX: "auto",
+          minWidth: 900,
+        }}
+      >
+        {r64.length > 0 && <BracketColumn title="Round of 64" games={r64} />}
+        {r32.length > 0 && <BracketColumn title="Round of 32" games={r32} gapTop={38} />}
+        {r16.length > 0 && <BracketColumn title="Sweet 16" games={r16} gapTop={82} />}
+        {r8.length > 0 && <BracketColumn title="Elite 8" games={r8} gapTop={145} />}
+      </div>
+    </div>
+  );
+}
+
+function FinalsBracketBoard({ games, isMobile }) {
+  const finalFourGames = games.filter((g) => g.round === "r4");
+  const champGames = games.filter((g) => g.round === "champ");
+
+  if (!finalFourGames.length && !champGames.length) return null;
+
+  return (
+    <div style={cardStyle()}>
+      <h3 style={{ marginTop: 0, marginBottom: 14 }}>Final Four / Championship</h3>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1.2fr .9fr",
+          gap: 18,
+          alignItems: "start",
+        }}
+      >
+        {finalFourGames.length > 0 && (
+          <BracketColumn title="Final Four" games={finalFourGames} />
+        )}
+
+        {champGames.length > 0 && (
+          <BracketColumn
+            title="Championship"
+            games={champGames}
+            gapTop={isMobile ? 0 : 70}
+          />
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function App() {
@@ -742,7 +898,7 @@ export default function App() {
             ...cardStyle(),
             marginBottom: 16,
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, max-content)",
+            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5, max-content)",
             gap: 8,
           }}
         >
@@ -1136,232 +1292,46 @@ export default function App() {
         )}
 
         {tab === "bracket-map" && (
-  <div style={cardStyle()}>
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 12,
-        alignItems: isMobile ? "flex-start" : "center",
-        flexDirection: isMobile ? "column" : "row",
-        marginBottom: 16,
-      }}
-    >
-      <div>
-        <h2 style={{ margin: 0 }}>Full Bracket Map</h2>
-        <div style={{ color: "#475569", marginTop: 6, fontSize: 14 }}>
-          NCAA teams are shown with the drafted pool team in parentheses.
-        </div>
-      </div>
-      <div style={{ fontSize: 14, color: "#475569" }}>
-        Example: <strong>Houston (Rehabilitators)</strong>
-      </div>
-    </div>
-
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "repeat(2, minmax(0, 1fr))",
-        gap: 16,
-      }}
-    >
-      {["East", "West", "South", "Midwest"].map((region) => (
-        <div
-          key={region}
-          style={{
-            border: "1px solid #e5e7eb",
-            borderRadius: 16,
-            padding: 14,
-            background: "#f8fafc",
-          }}
-        >
-          <h3 style={{ marginTop: 0, marginBottom: 12 }}>{region}</h3>
-
-          {["r64", "r32", "r16"].map((round) => {
-            const roundGames = getRegionGames(games, region, round);
-            if (!roundGames.length) return null;
-
-            return (
-              <div key={`${region}-${round}`} style={{ marginBottom: 16 }}>
-                <div
-                  style={{
-                    fontSize: 12,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.04em",
-                    color: "#64748b",
-                    marginBottom: 8,
-                  }}
-                >
-                  {roundLabels[round]}
+          <div style={{ display: "grid", gap: 16 }}>
+            <div style={cardStyle()}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  alignItems: isMobile ? "flex-start" : "center",
+                  flexDirection: isMobile ? "column" : "row",
+                }}
+              >
+                <div>
+                  <h2 style={{ margin: 0 }}>Bracket Map</h2>
+                  <div style={{ color: "#475569", marginTop: 6, fontSize: 14 }}>
+                    NCAA teams are shown with the drafted pool team in parentheses.
+                  </div>
                 </div>
 
-                <div style={{ display: "grid", gap: 10 }}>
-                  {roundGames.map((game) => {
-                    const teamAEliminated =
-                      game.winner && !teamMatchesPick(game.teamA, game.winner);
-                    const teamBEliminated =
-                      game.winner && !teamMatchesPick(game.teamB, game.winner);
-
-                    return (
-                      <div
-                        key={game.id}
-                        style={{
-                          border: "1px solid #e5e7eb",
-                          borderRadius: 12,
-                          padding: 10,
-                          background: "white",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "grid",
-                            gap: 8,
-                          }}
-                        >
-                          <div style={bracketTeamStyle(game.winner === game.teamA, teamAEliminated)}>
-                            {formatBracketTeamLabel(game.teamA)} ({game.seedA})
-                            {teamAEliminated && (
-                              <div
-                                style={{
-                                  position: "absolute",
-                                  left: "-10%",
-                                  top: "50%",
-                                  width: "120%",
-                                  height: 2,
-                                  background: "#dc2626",
-                                  transform: "rotate(-12deg)",
-                                }}
-                              />
-                            )}
-                          </div>
-
-                          <div style={bracketTeamStyle(game.winner === game.teamB, teamBEliminated)}>
-                            {formatBracketTeamLabel(game.teamB)} ({game.seedB})
-                            {teamBEliminated && (
-                              <div
-                                style={{
-                                  position: "absolute",
-                                  left: "-10%",
-                                  top: "50%",
-                                  width: "120%",
-                                  height: 2,
-                                  background: "#dc2626",
-                                  transform: "rotate(-12deg)",
-                                }}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                <div style={{ fontSize: 14, color: "#475569" }}>
+                  Example: <strong>Houston (Rehabilitators)</strong>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-
-    <div style={{ marginTop: 20 }}>
-      <div
-        style={{
-          fontSize: 12,
-          textTransform: "uppercase",
-          letterSpacing: "0.04em",
-          color: "#64748b",
-          marginBottom: 8,
-        }}
-      >
-        Cross-region rounds
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
-          gap: 12,
-        }}
-      >
-        {["r8", "r4", "champ"].map((round) => {
-          const roundGames = games.filter((game) => game.round === round);
-          if (!roundGames.length) return null;
-
-          return (
-            <div
-              key={round}
-              style={{
-                border: "1px solid #e5e7eb",
-                borderRadius: 12,
-                padding: 12,
-                background: "#f8fafc",
-              }}
-            >
-              <div style={{ fontWeight: 700, marginBottom: 10 }}>{roundLabels[round]}</div>
-
-              <div style={{ display: "grid", gap: 10 }}>
-                {roundGames.map((game) => {
-                  const teamAEliminated =
-                    game.winner && !teamMatchesPick(game.teamA, game.winner);
-                  const teamBEliminated =
-                    game.winner && !teamMatchesPick(game.teamB, game.winner);
-
-                  return (
-                    <div
-                      key={game.id}
-                      style={{
-                        border: "1px solid #e5e7eb",
-                        borderRadius: 12,
-                        padding: 10,
-                        background: "white",
-                      }}
-                    >
-                      <div style={{ display: "grid", gap: 8 }}>
-                        <div style={bracketTeamStyle(game.winner === game.teamA, teamAEliminated)}>
-                          {formatBracketTeamLabel(game.teamA)} ({game.seedA})
-                          {teamAEliminated && (
-                            <div
-                              style={{
-                                position: "absolute",
-                                left: "-10%",
-                                top: "50%",
-                                width: "120%",
-                                height: 2,
-                                background: "#dc2626",
-                                transform: "rotate(-12deg)",
-                              }}
-                            />
-                          )}
-                        </div>
-
-                        <div style={bracketTeamStyle(game.winner === game.teamB, teamBEliminated)}>
-                          {formatBracketTeamLabel(game.teamB)} ({game.seedB})
-                          {teamBEliminated && (
-                            <div
-                              style={{
-                                position: "absolute",
-                                left: "-10%",
-                                top: "50%",
-                                width: "120%",
-                                height: 2,
-                                background: "#dc2626",
-                                transform: "rotate(-12deg)",
-                              }}
-                            />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
             </div>
-          );
-        })}
-      </div>
-    </div>
-  </div>
-)}
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                gap: 16,
+              }}
+            >
+              <RegionBracketBoard region="East" games={games} isMobile={isMobile} />
+              <RegionBracketBoard region="West" games={games} isMobile={isMobile} />
+              <RegionBracketBoard region="South" games={games} isMobile={isMobile} />
+              <RegionBracketBoard region="Midwest" games={games} isMobile={isMobile} />
+            </div>
+
+            <FinalsBracketBoard games={games} isMobile={isMobile} />
+          </div>
+        )}
 
         {tab === "trash-talk" && (
           <div
@@ -1536,6 +1506,7 @@ export default function App() {
                   "Last updated time",
                   "Lock mode for view-only sharing",
                   "Mobile-friendly layout",
+                  "Bracket Map page",
                   "Trash-talk submission and voting",
                 ].map((item) => (
                   <div
