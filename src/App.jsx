@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { supabase } from "./supabase";
 
-const STORAGE_KEY = "march-madness-full-tracker-v6";
+const STORAGE_KEY = "march-madness-full-tracker-v7";
 
 const initialOwners = [
   {
@@ -137,7 +138,6 @@ const roundLabels = {
 };
 
 const defaultGames = [
-  // EAST R64
   { id: 1, round: "r64", region: "East", teamA: "Duke", seedA: 1, teamB: "Siena", seedB: 16, winner: "Duke" },
   { id: 2, round: "r64", region: "East", teamA: "Ohio State", seedA: 8, teamB: "TCU", seedB: 9, winner: "TCU" },
   { id: 3, round: "r64", region: "East", teamA: "St. John's", seedA: 5, teamB: "Northern Iowa", seedB: 12, winner: "St. John's" },
@@ -147,7 +147,6 @@ const defaultGames = [
   { id: 7, round: "r64", region: "East", teamA: "UCLA", seedA: 7, teamB: "UCF", seedB: 10, winner: "UCLA" },
   { id: 8, round: "r64", region: "East", teamA: "UConn", seedA: 2, teamB: "Furman", seedB: 15, winner: "UConn" },
 
-  // WEST R64
   { id: 9, round: "r64", region: "West", teamA: "Arizona", seedA: 1, teamB: "Long Island", seedB: 16, winner: "Arizona" },
   { id: 10, round: "r64", region: "West", teamA: "Villanova", seedA: 8, teamB: "Utah State", seedB: 9, winner: "Utah State" },
   { id: 11, round: "r64", region: "West", teamA: "Wisconsin", seedA: 5, teamB: "High Point", seedB: 12, winner: "High Point" },
@@ -157,7 +156,6 @@ const defaultGames = [
   { id: 15, round: "r64", region: "West", teamA: "Miami (FL)", seedA: 7, teamB: "Missouri", seedB: 10, winner: "Miami (FL)" },
   { id: 16, round: "r64", region: "West", teamA: "Purdue", seedA: 2, teamB: "Queens N.C.", seedB: 15, winner: "Purdue" },
 
-  // SOUTH R64
   { id: 17, round: "r64", region: "South", teamA: "Florida", seedA: 1, teamB: "Prairie View A&M", seedB: 16, winner: "Florida" },
   { id: 18, round: "r64", region: "South", teamA: "Clemson", seedA: 8, teamB: "Iowa", seedB: 9, winner: "Iowa" },
   { id: 19, round: "r64", region: "South", teamA: "Vanderbilt", seedA: 5, teamB: "McNeese", seedB: 12, winner: "Vanderbilt" },
@@ -167,7 +165,6 @@ const defaultGames = [
   { id: 23, round: "r64", region: "South", teamA: "Saint Mary's", seedA: 7, teamB: "Texas A&M", seedB: 10, winner: "Texas A&M" },
   { id: 24, round: "r64", region: "South", teamA: "Houston", seedA: 2, teamB: "Idaho", seedB: 15, winner: "Houston" },
 
-  // MIDWEST R64
   { id: 25, round: "r64", region: "Midwest", teamA: "Michigan", seedA: 1, teamB: "Howard", seedB: 16, winner: "Michigan" },
   { id: 26, round: "r64", region: "Midwest", teamA: "Georgia", seedA: 8, teamB: "Saint Louis", seedB: 9, winner: "Saint Louis" },
   { id: 27, round: "r64", region: "Midwest", teamA: "Texas Tech", seedA: 5, teamB: "Akron", seedB: 12, winner: "Texas Tech" },
@@ -177,7 +174,6 @@ const defaultGames = [
   { id: 31, round: "r64", region: "Midwest", teamA: "Kentucky", seedA: 7, teamB: "Santa Clara", seedB: 10, winner: "Kentucky" },
   { id: 32, round: "r64", region: "Midwest", teamA: "Iowa State", seedA: 2, teamB: "Tennessee State", seedB: 15, winner: "Iowa State" },
 
-  // R32
   { id: 33, round: "r32", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 34, round: "r32", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 35, round: "r32", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
@@ -198,7 +194,6 @@ const defaultGames = [
   { id: 47, round: "r32", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 48, round: "r32", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
 
-  // SWEET 16
   { id: 49, round: "r16", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 50, round: "r16", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 51, round: "r16", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
@@ -208,17 +203,14 @@ const defaultGames = [
   { id: 55, round: "r16", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 56, round: "r16", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
 
-  // ELITE 8
   { id: 57, round: "r8", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 58, round: "r8", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 59, round: "r8", region: "South", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 60, round: "r8", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
 
-  // FINAL FOUR
   { id: 61, round: "r4", region: "Final Four", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
   { id: 62, round: "r4", region: "Final Four", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
 
-  // CHAMPIONSHIP
   { id: 63, round: "champ", region: "Finals", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
 ];
 
@@ -560,11 +552,31 @@ function getTeamStatusLabel(teamName, games) {
   return "Not yet in tracked games";
 }
 
+async function saveSnapshotGlobal(state) {
+  const id = Math.random().toString(36).slice(2, 8);
+  const { error } = await supabase.from("snapshots").insert({
+    id,
+    payload: state,
+  });
+  if (error) throw error;
+  return id;
+}
+
+async function loadSnapshotGlobal(id) {
+  const { data, error } = await supabase
+    .from("snapshots")
+    .select("payload")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data?.payload ?? null;
+}
+
 const BRACKET = {
   boxW: 220,
   cardH: 46,
   gapBetweenTeams: 8,
-  matchH: 100,
   colGap: 70,
 };
 
@@ -638,13 +650,9 @@ function BracketTeamCard({ teamName, seed, isWinner, isEliminated }) {
 
 function BracketMatch({ game }) {
   const teamAEliminated =
-    !!game.winner &&
-    !!game.teamA &&
-    normalizeName(game.winner) !== normalizeName(game.teamA);
+    !!game.winner && !!game.teamA && normalizeName(game.winner) !== normalizeName(game.teamA);
   const teamBEliminated =
-    !!game.winner &&
-    !!game.teamB &&
-    normalizeName(game.winner) !== normalizeName(game.teamB);
+    !!game.winner && !!game.teamB && normalizeName(game.winner) !== normalizeName(game.teamB);
 
   return (
     <div style={{ display: "grid", gap: BRACKET.gapBetweenTeams }}>
@@ -710,7 +718,6 @@ function RegionBracketBoard({ region, games, isMobile }) {
 
   const svgW = roundX("r8") + BRACKET.boxW;
   const svgH = 940;
-
   const lines = [];
 
   const addConnectionLines = (sourceRound, targetRound, sourceCountPerTarget) => {
@@ -766,20 +773,9 @@ function RegionBracketBoard({ region, games, isMobile }) {
   return (
     <div style={cardStyle()}>
       <h3 style={{ marginTop: 0, marginBottom: 14 }}>{region}</h3>
-
       <div style={{ overflowX: "auto" }}>
-        <div
-          style={{
-            position: "relative",
-            width: svgW,
-            height: svgH,
-          }}
-        >
-          <svg
-            width={svgW}
-            height={svgH}
-            style={{ position: "absolute", inset: 0, overflow: "visible" }}
-          >
+        <div style={{ position: "relative", width: svgW, height: svgH }}>
+          <svg width={svgW} height={svgH} style={{ position: "absolute", inset: 0 }}>
             {lines}
           </svg>
 
@@ -803,16 +799,7 @@ function FinalsBracketBoard({ games, isMobile }) {
         <h3 style={{ marginTop: 0, marginBottom: 14 }}>Final Four / Championship</h3>
         <div style={{ display: "grid", gap: 16 }}>
           <div>
-            <div
-              style={{
-                fontSize: 12,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-                color: "#64748b",
-                marginBottom: 8,
-                fontWeight: 700,
-              }}
-            >
+            <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.04em", color: "#64748b", marginBottom: 8, fontWeight: 700 }}>
               Final Four
             </div>
             <div style={{ display: "grid", gap: 10 }}>
@@ -823,16 +810,7 @@ function FinalsBracketBoard({ games, isMobile }) {
           </div>
 
           <div>
-            <div
-              style={{
-                fontSize: 12,
-                textTransform: "uppercase",
-                letterSpacing: "0.04em",
-                color: "#64748b",
-                marginBottom: 8,
-                fontWeight: 700,
-              }}
-            >
+            <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.04em", color: "#64748b", marginBottom: 8, fontWeight: 700 }}>
               Championship
             </div>
             {champ ? <BracketMatch game={champ} /> : null}
@@ -848,8 +826,8 @@ function FinalsBracketBoard({ games, isMobile }) {
   const yChamp = 270;
   const svgW = 560;
   const svgH = 560;
-
   const lines = [];
+
   if (champ) {
     const x1 = xFF + BRACKET.boxW;
     const x2 = xChamp;
@@ -877,11 +855,7 @@ function FinalsBracketBoard({ games, isMobile }) {
       <h3 style={{ marginTop: 0, marginBottom: 14 }}>Final Four / Championship</h3>
       <div style={{ overflowX: "auto" }}>
         <div style={{ position: "relative", width: svgW, height: svgH }}>
-          <svg
-            width={svgW}
-            height={svgH}
-            style={{ position: "absolute", inset: 0, overflow: "visible" }}
-          >
+          <svg width={svgW} height={svgH} style={{ position: "absolute", inset: 0 }}>
             {lines}
           </svg>
 
@@ -936,17 +910,33 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const shared = params.get("data");
-      const lockParam = params.get("lock");
+    async function loadInitialState() {
+      try {
+        const path = window.location.pathname;
+        const params = new URLSearchParams(window.location.search);
+        const shared = params.get("data");
+        const lockParam = params.get("lock");
 
-      if (shared) {
-        const decoded = decodeState(shared);
-        if (decoded?.games) setGames(advanceWinners(decoded.games));
-        if (decoded?.trashTalkEntries) setTrashTalkEntries(decoded.trashTalkEntries);
-        if (decoded?.lastUpdated) setLastUpdated(decoded.lastUpdated);
-      } else {
+        if (path.startsWith("/s/")) {
+          const id = path.split("/s/")[1];
+          const snap = await loadSnapshotGlobal(id);
+
+          if (snap?.games) setGames(advanceWinners(snap.games));
+          if (snap?.trashTalkEntries) setTrashTalkEntries(snap.trashTalkEntries);
+          if (snap?.lastUpdated) setLastUpdated(snap.lastUpdated);
+          if (lockParam === "1") setIsLocked(true);
+          return;
+        }
+
+        if (shared) {
+          const decoded = decodeState(shared);
+          if (decoded?.games) setGames(advanceWinners(decoded.games));
+          if (decoded?.trashTalkEntries) setTrashTalkEntries(decoded.trashTalkEntries);
+          if (decoded?.lastUpdated) setLastUpdated(decoded.lastUpdated);
+          if (lockParam === "1") setIsLocked(true);
+          return;
+        }
+
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const saved = JSON.parse(raw);
@@ -955,12 +945,14 @@ export default function App() {
           if (saved.trashTalkEntries) setTrashTalkEntries(saved.trashTalkEntries);
           if (saved.lastUpdated) setLastUpdated(saved.lastUpdated);
         }
-      }
 
-      if (lockParam === "1") setIsLocked(true);
-    } catch (e) {
-      console.error("Failed to load saved data", e);
+        if (lockParam === "1") setIsLocked(true);
+      } catch (e) {
+        console.error("Failed to load saved data", e);
+      }
     }
+
+    loadInitialState();
   }, []);
 
   useEffect(() => {
@@ -1099,6 +1091,18 @@ export default function App() {
     copyToClipboard(url);
   }
 
+  async function saveGlobalSnapshot(locked = true) {
+    try {
+      const snapshot = { games, trashTalkEntries, lastUpdated };
+      const id = await saveSnapshotGlobal(snapshot);
+      const url = `${window.location.origin}/s/${id}${locked ? "?lock=1" : ""}`;
+      await copyToClipboard(url);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to save snapshot.");
+    }
+  }
+
   const totalTrackedGames = games.filter((g) => g.winner).length;
 
   return (
@@ -1122,15 +1126,7 @@ export default function App() {
             }}
           >
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  alignItems: "center",
-                  marginBottom: 10,
-                  flexWrap: "wrap",
-                }}
-              >
+              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
                 <span style={{ fontSize: isMobile ? 24 : 28 }}>🏀</span>
                 <span
                   style={{
@@ -1168,22 +1164,10 @@ export default function App() {
                 </span>
               </div>
 
-              <h1
-                style={{
-                  margin: "0 0 8px",
-                  fontSize: isMobile ? 24 : 34,
-                  lineHeight: 1.15,
-                }}
-              >
+              <h1 style={{ margin: "0 0 8px", fontSize: isMobile ? 24 : 34, lineHeight: 1.15 }}>
                 March Madness Tourney Dashboard
               </h1>
-              <p
-                style={{
-                  margin: 0,
-                  color: "#475569",
-                  fontSize: isMobile ? 14 : 16,
-                }}
-              >
+              <p style={{ margin: 0, color: "#475569", fontSize: isMobile ? 14 : 16 }}>
                 Click winners manually and let the tracker calculate the scoring.
               </p>
               <div style={{ marginTop: 10, fontSize: 14, color: "#475569" }}>
@@ -1203,9 +1187,7 @@ export default function App() {
             >
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Buy-in</div>
-                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>
-                  $200
-                </div>
+                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>$200</div>
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Games tracked</div>
@@ -1215,9 +1197,7 @@ export default function App() {
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Scoring formula</div>
-                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>
-                  Round + upset
-                </div>
+                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>Round + upset</div>
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Champion holder</div>
@@ -1268,9 +1248,7 @@ export default function App() {
               }}
             >
               <div style={cardStyle()}>
-                <div style={{ fontSize: 13, color: "#64748b" }}>
-                  How upset scoring works
-                </div>
+                <div style={{ fontSize: 13, color: "#64748b" }}>How upset scoring works</div>
                 <div style={{ fontSize: 20, fontWeight: 700, marginTop: 6 }}>
                   Round points + seed difference
                 </div>
@@ -1284,8 +1262,7 @@ export default function App() {
                   Champion holder wins tie
                 </div>
                 <div style={{ fontSize: 14, color: "#475569", marginTop: 6 }}>
-                  If neither tied team has the champ, highest points through Final
-                  Four wins.
+                  If neither tied team has the champ, highest points through Final Four wins.
                 </div>
               </div>
               <div style={cardStyle()}>
@@ -1300,10 +1277,10 @@ export default function App() {
               <div style={cardStyle()}>
                 <div style={{ fontSize: 13, color: "#64748b" }}>Share mode</div>
                 <div style={{ fontSize: 20, fontWeight: 700, marginTop: 6 }}>
-                  Locked share links
+                  Global snapshots
                 </div>
                 <div style={{ fontSize: 14, color: "#475569", marginTop: 6 }}>
-                  Recipients can view but not edit.
+                  Save a short link everyone can open.
                 </div>
               </div>
             </div>
@@ -1340,36 +1317,16 @@ export default function App() {
                 <table style={{ width: "100%", minWidth: 900, borderCollapse: "collapse" }}>
                   <thead>
                     <tr style={{ color: "#64748b", textAlign: "left" }}>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        Rank
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        Owners
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        Team
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        64
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        32
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        16
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        8
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        4
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        Champ
-                      </th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
-                        Total
-                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Rank</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Owners</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Team</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>64</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>32</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>16</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>8</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>4</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Champ</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1379,37 +1336,15 @@ export default function App() {
                           {index === 0 ? "👑 " : index < 3 ? "🏅 " : ""}
                           {index + 1}
                         </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                          {owner.owners}
-                        </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                          {owner.teamName}
-                        </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                          {owner.byRound.r64}
-                        </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                          {owner.byRound.r32}
-                        </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                          {owner.byRound.r16}
-                        </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                          {owner.byRound.r8}
-                        </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                          {owner.byRound.r4}
-                        </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                          {owner.byRound.champ}
-                        </td>
-                        <td
-                          style={{
-                            padding: "12px 8px",
-                            borderBottom: "1px solid #f1f5f9",
-                            fontWeight: 700,
-                          }}
-                        >
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.owners}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.teamName}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r64}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r32}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r16}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r8}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r4}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.champ}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9", fontWeight: 700 }}>
                           {owner.score}
                         </td>
                       </tr>
@@ -1461,9 +1396,7 @@ export default function App() {
                     return (
                       <div key={pick.team} style={teamRowStyle(progress.eliminated)}>
                         <div style={{ minWidth: 0, flex: 1 }}>
-                          <div style={{ fontWeight: 600, wordBreak: "break-word" }}>
-                            {pick.team}
-                          </div>
+                          <div style={{ fontWeight: 600, wordBreak: "break-word" }}>{pick.team}</div>
                           <div style={{ fontSize: 12, color: "#64748b" }}>
                             Seed {pick.seed} • {getTeamStatusLabel(pick.team, games)}
                           </div>
@@ -1493,8 +1426,8 @@ export default function App() {
 
               {roundOrder.map((round) => {
                 const roundGames = games
-                    .filter((game) => game.round === round)
-                      .sort((a, b) => a.id - b.id);
+                  .filter((game) => game.round === round)
+                  .sort((a, b) => a.id - b.id);
 
                 if (!roundGames.length) return null;
 
@@ -1523,13 +1456,7 @@ export default function App() {
                             flexWrap: "wrap",
                           }}
                         >
-                          <div
-                            style={{
-                              fontSize: 12,
-                              textTransform: "uppercase",
-                              color: "#64748b",
-                            }}
-                          >
+                          <div style={{ fontSize: 12, textTransform: "uppercase", color: "#64748b" }}>
                             {game.region}
                           </div>
                           <div
@@ -1556,14 +1483,11 @@ export default function App() {
                             onClick={() => updateGameWinner(game.id, game.teamA)}
                             style={{
                               ...buttonStyle(game.winner === game.teamA, isMobile),
-                              cursor:
-                                isLocked || !game.teamA ? "not-allowed" : "pointer",
+                              cursor: isLocked || !game.teamA ? "not-allowed" : "pointer",
                               opacity: isLocked || !game.teamA ? 0.7 : 1,
                             }}
                           >
-                            <div style={{ fontSize: 12, opacity: 0.8 }}>
-                              Seed {game.seedA || "-"}
-                            </div>
+                            <div style={{ fontSize: 12, opacity: 0.8 }}>Seed {game.seedA || "-"}</div>
                             <div>{game.teamA || "TBD"}</div>
                           </button>
 
@@ -1572,14 +1496,11 @@ export default function App() {
                             onClick={() => updateGameWinner(game.id, game.teamB)}
                             style={{
                               ...buttonStyle(game.winner === game.teamB, isMobile),
-                              cursor:
-                                isLocked || !game.teamB ? "not-allowed" : "pointer",
+                              cursor: isLocked || !game.teamB ? "not-allowed" : "pointer",
                               opacity: isLocked || !game.teamB ? 0.7 : 1,
                             }}
                           >
-                            <div style={{ fontSize: 12, opacity: 0.8 }}>
-                              Seed {game.seedB || "-"}
-                            </div>
+                            <div style={{ fontSize: 12, opacity: 0.8 }}>Seed {game.seedB || "-"}</div>
                             <div>{game.teamB || "TBD"}</div>
                           </button>
                         </div>
@@ -1603,10 +1524,10 @@ export default function App() {
                 Later rounds auto-fill from earlier winners.
               </div>
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 10 }) }}>
-                If you change an earlier winner, invalid downstream winners are cleared automatically.
+                Save Snapshot creates a short global link anyone can open.
               </div>
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 16 }) }}>
-                Correct example: 12 over 5 in Round 1 = 2 base points + 7 upset bonus = 9 total points.
+                12 over 5 in Round 1 = 2 base points + 7 upset bonus = 9 total points.
               </div>
 
               <div
@@ -1623,24 +1544,11 @@ export default function App() {
                 <button onClick={() => generateShareLink(true)} style={buttonStyle(false, isMobile)}>
                   Generate Share Link
                 </button>
-                <button
-                  onClick={() => generateShareLink(false)}
-                  style={buttonStyle(false, isMobile)}
-                >
-                  Generate Editable Link
+                <button onClick={() => saveGlobalSnapshot(true)} style={buttonStyle(false, isMobile)}>
+                  Save Snapshot
                 </button>
-                <button
-                  disabled={isLocked}
-                  onClick={resetAll}
-                  style={{
-                    ...buttonStyle(false, isMobile),
-                    borderColor: "#dc2626",
-                    color: "#dc2626",
-                    cursor: isLocked ? "not-allowed" : "pointer",
-                    opacity: isLocked ? 0.6 : 1,
-                  }}
-                >
-                  Reset demo data
+                <button onClick={() => saveGlobalSnapshot(false)} style={buttonStyle(false, isMobile)}>
+                  Save Editable Snapshot
                 </button>
               </div>
 
@@ -1653,16 +1561,10 @@ export default function App() {
                   marginBottom: 16,
                 }}
               >
-                <button
-                  onClick={() => setViewMode("public")}
-                  style={buttonStyle(viewMode === "public", isMobile)}
-                >
+                <button onClick={() => setViewMode("public")} style={buttonStyle(viewMode === "public", isMobile)}>
                   Public
                 </button>
-                <button
-                  onClick={() => setViewMode("admin")}
-                  style={buttonStyle(viewMode === "admin", isMobile)}
-                >
+                <button onClick={() => setViewMode("admin")} style={buttonStyle(viewMode === "admin", isMobile)}>
                   Admin
                 </button>
               </div>
@@ -1677,16 +1579,10 @@ export default function App() {
                       gap: 10,
                     }}
                   >
-                    <button
-                      onClick={() => setIsLocked(false)}
-                      style={buttonStyle(!isLocked, isMobile)}
-                    >
+                    <button onClick={() => setIsLocked(false)} style={buttonStyle(!isLocked, isMobile)}>
                       Unlocked
                     </button>
-                    <button
-                      onClick={() => setIsLocked(true)}
-                      style={buttonStyle(isLocked, isMobile)}
-                    >
+                    <button onClick={() => setIsLocked(true)} style={buttonStyle(isLocked, isMobile)}>
                       Locked
                     </button>
                   </div>
@@ -1901,15 +1797,14 @@ export default function App() {
                 }}
               >
                 {[
+                  "Global Supabase snapshots",
                   "Auto-advancing bracket",
                   "Bracket lines on Bracket Map",
-                  "Clear upset-scoring examples",
                   "Manual winner tracking",
                   "Automatic standings recalculation",
                   "Champion-holder tie-break logic",
                   "Play-in winner name matching",
                   "Elimination slash on leaderboard",
-                  "Shareable snapshot links",
                   "Last updated time",
                   "Lock mode for view-only sharing",
                   "Mobile-friendly layout",
