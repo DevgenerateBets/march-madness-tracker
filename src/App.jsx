@@ -1493,12 +1493,8 @@ export default function App() {
 
               {roundOrder.map((round) => {
                 const roundGames = games
-                  .filter(
-                    (game) =>
-                      game.round === round &&
-                      (game.teamA || game.teamB || round === "champ" || round === "r4")
-                  )
-                  .sort((a, b) => a.id - b.id);
+                    .filter((game) => game.round === round)
+                      .sort((a, b) => a.id - b.id);
 
                 if (!roundGames.length) return null;
 
