@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY = "march-madness-full-tracker-v5";
+const STORAGE_KEY = "march-madness-full-tracker-v6";
 
 const initialOwners = [
   {
@@ -137,53 +137,89 @@ const roundLabels = {
 };
 
 const defaultGames = [
+  // EAST R64
   { id: 1, round: "r64", region: "East", teamA: "Duke", seedA: 1, teamB: "Siena", seedB: 16, winner: "Duke" },
   { id: 2, round: "r64", region: "East", teamA: "Ohio State", seedA: 8, teamB: "TCU", seedB: 9, winner: "TCU" },
-  { id: 3, round: "r64", region: "East", teamA: "St. John's", seedA: 5, teamB: "Northern Iowa", seedB: 12, winner: "" },
-  { id: 4, round: "r64", region: "East", teamA: "Kansas", seedA: 4, teamB: "Cal Baptist", seedB: 13, winner: "" },
-  { id: 5, round: "r64", region: "East", teamA: "Louisville", seedA: 6, teamB: "South Florida", seedB: 11, winner: "" },
-  { id: 6, round: "r64", region: "East", teamA: "Michigan State", seedA: 3, teamB: "North Dakota State", seedB: 14, winner: "" },
-  { id: 7, round: "r64", region: "East", teamA: "UCLA", seedA: 7, teamB: "UCF", seedB: 10, winner: "" },
-  { id: 8, round: "r64", region: "East", teamA: "UConn", seedA: 2, teamB: "Furman", seedB: 15, winner: "" },
+  { id: 3, round: "r64", region: "East", teamA: "St. John's", seedA: 5, teamB: "Northern Iowa", seedB: 12, winner: "St. John's" },
+  { id: 4, round: "r64", region: "East", teamA: "Kansas", seedA: 4, teamB: "Cal Baptist", seedB: 13, winner: "Kansas" },
+  { id: 5, round: "r64", region: "East", teamA: "Louisville", seedA: 6, teamB: "South Florida", seedB: 11, winner: "Louisville" },
+  { id: 6, round: "r64", region: "East", teamA: "Michigan State", seedA: 3, teamB: "North Dakota State", seedB: 14, winner: "Michigan State" },
+  { id: 7, round: "r64", region: "East", teamA: "UCLA", seedA: 7, teamB: "UCF", seedB: 10, winner: "UCLA" },
+  { id: 8, round: "r64", region: "East", teamA: "UConn", seedA: 2, teamB: "Furman", seedB: 15, winner: "UConn" },
 
-  { id: 9, round: "r64", region: "West", teamA: "Arizona", seedA: 1, teamB: "Long Island", seedB: 16, winner: "" },
-  { id: 10, round: "r64", region: "West", teamA: "Villanova", seedA: 8, teamB: "Utah State", seedB: 9, winner: "" },
+  // WEST R64
+  { id: 9, round: "r64", region: "West", teamA: "Arizona", seedA: 1, teamB: "Long Island", seedB: 16, winner: "Arizona" },
+  { id: 10, round: "r64", region: "West", teamA: "Villanova", seedA: 8, teamB: "Utah State", seedB: 9, winner: "Utah State" },
   { id: 11, round: "r64", region: "West", teamA: "Wisconsin", seedA: 5, teamB: "High Point", seedB: 12, winner: "High Point" },
-  { id: 12, round: "r64", region: "West", teamA: "Arkansas", seedA: 4, teamB: "Hawaii", seedB: 13, winner: "" },
-  { id: 13, round: "r64", region: "West", teamA: "BYU", seedA: 6, teamB: "Texas", seedB: 11, winner: "" },
-  { id: 14, round: "r64", region: "West", teamA: "Gonzaga", seedA: 3, teamB: "Kennesaw State", seedB: 14, winner: "" },
-  { id: 15, round: "r64", region: "West", teamA: "Miami (FL)", seedA: 7, teamB: "Missouri", seedB: 10, winner: "" },
-  { id: 16, round: "r64", region: "West", teamA: "Purdue", seedA: 2, teamB: "Queens N.C.", seedB: 15, winner: "" },
+  { id: 12, round: "r64", region: "West", teamA: "Arkansas", seedA: 4, teamB: "Hawaii", seedB: 13, winner: "Arkansas" },
+  { id: 13, round: "r64", region: "West", teamA: "BYU", seedA: 6, teamB: "Texas", seedB: 11, winner: "Texas" },
+  { id: 14, round: "r64", region: "West", teamA: "Gonzaga", seedA: 3, teamB: "Kennesaw State", seedB: 14, winner: "Gonzaga" },
+  { id: 15, round: "r64", region: "West", teamA: "Miami (FL)", seedA: 7, teamB: "Missouri", seedB: 10, winner: "Miami (FL)" },
+  { id: 16, round: "r64", region: "West", teamA: "Purdue", seedA: 2, teamB: "Queens N.C.", seedB: 15, winner: "Purdue" },
 
-  { id: 17, round: "r64", region: "South", teamA: "Florida", seedA: 1, teamB: "Prairie View", seedB: 16, winner: "" },
-  { id: 18, round: "r64", region: "South", teamA: "Clemson", seedA: 8, teamB: "Iowa", seedB: 9, winner: "" },
+  // SOUTH R64
+  { id: 17, round: "r64", region: "South", teamA: "Florida", seedA: 1, teamB: "Prairie View A&M", seedB: 16, winner: "Florida" },
+  { id: 18, round: "r64", region: "South", teamA: "Clemson", seedA: 8, teamB: "Iowa", seedB: 9, winner: "Iowa" },
   { id: 19, round: "r64", region: "South", teamA: "Vanderbilt", seedA: 5, teamB: "McNeese", seedB: 12, winner: "Vanderbilt" },
-  { id: 20, round: "r64", region: "South", teamA: "Nebraska", seedA: 4, teamB: "Troy", seedB: 13, winner: "" },
+  { id: 20, round: "r64", region: "South", teamA: "Nebraska", seedA: 4, teamB: "Troy", seedB: 13, winner: "Nebraska" },
   { id: 21, round: "r64", region: "South", teamA: "North Carolina", seedA: 6, teamB: "VCU", seedB: 11, winner: "VCU" },
   { id: 22, round: "r64", region: "South", teamA: "Illinois", seedA: 3, teamB: "Penn", seedB: 14, winner: "Illinois" },
   { id: 23, round: "r64", region: "South", teamA: "Saint Mary's", seedA: 7, teamB: "Texas A&M", seedB: 10, winner: "Texas A&M" },
   { id: 24, round: "r64", region: "South", teamA: "Houston", seedA: 2, teamB: "Idaho", seedB: 15, winner: "Houston" },
 
+  // MIDWEST R64
   { id: 25, round: "r64", region: "Midwest", teamA: "Michigan", seedA: 1, teamB: "Howard", seedB: 16, winner: "Michigan" },
-  { id: 26, round: "r64", region: "Midwest", teamA: "Georgia", seedA: 8, teamB: "St. Louis", seedB: 9, winner: "" },
-  { id: 27, round: "r64", region: "Midwest", teamA: "Texas Tech", seedA: 5, teamB: "Akron", seedB: 12, winner: "" },
-  { id: 28, round: "r64", region: "Midwest", teamA: "Alabama", seedA: 4, teamB: "Hofstra", seedB: 13, winner: "" },
-  { id: 29, round: "r64", region: "Midwest", teamA: "Tennessee", seedA: 6, teamB: "Miami (OH)", seedB: 11, winner: "" },
-  { id: 30, round: "r64", region: "Midwest", teamA: "Virginia", seedA: 3, teamB: "Wright State", seedB: 14, winner: "" },
+  { id: 26, round: "r64", region: "Midwest", teamA: "Georgia", seedA: 8, teamB: "Saint Louis", seedB: 9, winner: "Saint Louis" },
+  { id: 27, round: "r64", region: "Midwest", teamA: "Texas Tech", seedA: 5, teamB: "Akron", seedB: 12, winner: "Texas Tech" },
+  { id: 28, round: "r64", region: "Midwest", teamA: "Alabama", seedA: 4, teamB: "Hofstra", seedB: 13, winner: "Alabama" },
+  { id: 29, round: "r64", region: "Midwest", teamA: "Tennessee", seedA: 6, teamB: "Miami (Ohio)", seedB: 11, winner: "Tennessee" },
+  { id: 30, round: "r64", region: "Midwest", teamA: "Virginia", seedA: 3, teamB: "Wright State", seedB: 14, winner: "Virginia" },
   { id: 31, round: "r64", region: "Midwest", teamA: "Kentucky", seedA: 7, teamB: "Santa Clara", seedB: 10, winner: "Kentucky" },
-  { id: 32, round: "r64", region: "Midwest", teamA: "Iowa State", seedA: 2, teamB: "Tennessee State", seedB: 15, winner: "" },
+  { id: 32, round: "r64", region: "Midwest", teamA: "Iowa State", seedA: 2, teamB: "Tennessee State", seedB: 15, winner: "Iowa State" },
 
-  { id: 33, round: "r32", region: "East", teamA: "Duke", seedA: 1, teamB: "TCU", seedB: 9, winner: "" },
-  { id: 34, round: "r32", region: "East", teamA: "Louisville", seedA: 6, teamB: "Michigan State", seedB: 3, winner: "" },
-  { id: 35, round: "r32", region: "West", teamA: "Arizona", seedA: 1, teamB: "High Point", seedB: 12, winner: "" },
-  { id: 36, round: "r32", region: "West", teamA: "Texas", seedA: 11, teamB: "Gonzaga", seedB: 3, winner: "" },
-  { id: 37, round: "r32", region: "South", teamA: "Vanderbilt", seedA: 5, teamB: "Nebraska", seedB: 4, winner: "" },
-  { id: 38, round: "r32", region: "South", teamA: "VCU", seedA: 11, teamB: "Illinois", seedB: 3, winner: "" },
-  { id: 39, round: "r32", region: "South", teamA: "Texas A&M", seedA: 10, teamB: "Houston", seedB: 2, winner: "" },
-  { id: 40, round: "r32", region: "Midwest", teamA: "Michigan", seedA: 1, teamB: "St. Louis", seedB: 9, winner: "" },
+  // R32
+  { id: 33, round: "r32", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 34, round: "r32", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 35, round: "r32", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 36, round: "r32", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
 
-  { id: 41, round: "r16", region: "Final Four Path", teamA: "Florida", seedA: 1, teamB: "Duke", seedB: 1, winner: "" },
-  { id: 42, round: "champ", region: "Finals", teamA: "Florida", seedA: 1, teamB: "Duke", seedB: 1, winner: "" },
+  { id: 37, round: "r32", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 38, round: "r32", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 39, round: "r32", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 40, round: "r32", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+
+  { id: 41, round: "r32", region: "South", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 42, round: "r32", region: "South", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 43, round: "r32", region: "South", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 44, round: "r32", region: "South", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+
+  { id: 45, round: "r32", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 46, round: "r32", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 47, round: "r32", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 48, round: "r32", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+
+  // SWEET 16
+  { id: 49, round: "r16", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 50, round: "r16", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 51, round: "r16", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 52, round: "r16", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 53, round: "r16", region: "South", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 54, round: "r16", region: "South", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 55, round: "r16", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 56, round: "r16", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+
+  // ELITE 8
+  { id: 57, round: "r8", region: "East", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 58, round: "r8", region: "West", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 59, round: "r8", region: "South", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 60, round: "r8", region: "Midwest", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+
+  // FINAL FOUR
+  { id: 61, round: "r4", region: "Final Four", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+  { id: 62, round: "r4", region: "Final Four", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
+
+  // CHAMPIONSHIP
+  { id: 63, round: "champ", region: "Finals", teamA: "", seedA: "", teamB: "", seedB: "", winner: "" },
 ];
 
 const defaultTrashTalk = [
@@ -219,10 +255,16 @@ function splitPickOptions(teamName) {
     if (n === "northern iowa") aliases.add("n iowa");
     if (n === "miami fl") aliases.add("miami (fl)");
     if (n === "miami (fl)") aliases.add("miami fl");
+    if (n === "miami (oh)") aliases.add("miami (ohio)");
+    if (n === "miami (ohio)") aliases.add("miami (oh)");
     if (n === "hawaii") aliases.add("hawai'i");
     if (n === "hawai'i") aliases.add("hawaii");
     if (n === "st florida") aliases.add("south florida");
     if (n === "south florida") aliases.add("st florida");
+    if (n === "prairie view") aliases.add("prairie view a&m");
+    if (n === "prairie view a&m") aliases.add("prairie view");
+    if (n === "st louis") aliases.add("saint louis");
+    if (n === "saint louis") aliases.add("st louis");
 
     return [...aliases];
   });
@@ -256,89 +298,6 @@ function scorePick(results) {
   }
 
   return { total, breakdown };
-}
-
-function buildResultsFromGames(games) {
-  const state = {};
-
-  initialOwners.forEach((owner) => {
-    state[owner.teamName] = {};
-    owner.picks.forEach((pick) => {
-      state[owner.teamName][pick.team] = {
-        r64: { won: false, seed: pick.seed, opponentSeed: "" },
-        r32: { won: false, seed: pick.seed, opponentSeed: "" },
-        r16: { won: false, seed: pick.seed, opponentSeed: "" },
-        r8: { won: false, seed: pick.seed, opponentSeed: "" },
-        r4: { won: false, seed: pick.seed, opponentSeed: "" },
-        champ: { won: false, seed: pick.seed, opponentSeed: "" },
-      };
-    });
-  });
-
-  games.forEach((game) => {
-    if (!game.winner) return;
-
-    const loserSeed =
-      game.winner === game.teamA
-        ? game.seedB
-        : game.winner === game.teamB
-        ? game.seedA
-        : "";
-
-    initialOwners.forEach((owner) => {
-      owner.picks.forEach((pick) => {
-        if (teamMatchesPick(pick.team, game.winner)) {
-          state[owner.teamName][pick.team][game.round] = {
-            won: true,
-            seed: pick.seed,
-            opponentSeed: loserSeed,
-          };
-        }
-      });
-    });
-  });
-
-  return state;
-}
-
-function getTeamProgress(teamName, games) {
-  const options = splitPickOptions(teamName);
-  let lastRoundReached = null;
-  let eliminated = false;
-  let appeared = false;
-
-  const orderedGames = [...games].sort(
-    (a, b) => roundOrder.indexOf(a.round) - roundOrder.indexOf(b.round)
-  );
-
-  for (const game of orderedGames) {
-    const teamA = normalizeName(game.teamA);
-    const teamB = normalizeName(game.teamB);
-
-    const isInGame = options.includes(teamA) || options.includes(teamB);
-    if (!isInGame) continue;
-
-    appeared = true;
-    lastRoundReached = game.round;
-
-    if (game.winner) {
-      const winner = normalizeName(game.winner);
-      if (!options.includes(winner)) {
-        eliminated = true;
-        break;
-      }
-    }
-  }
-
-  return { lastRoundReached, eliminated, appeared };
-}
-
-function getTeamStatusLabel(teamName, games) {
-  const progress = getTeamProgress(teamName, games);
-  if (progress.eliminated) return "Eliminated";
-  if (progress.lastRoundReached) return `Alive (${roundLabels[progress.lastRoundReached]})`;
-  if (progress.appeared) return "Alive";
-  return "Not yet in tracked games";
 }
 
 function encodeState(state) {
@@ -430,8 +389,203 @@ function getOwnerTeamNameForSchool(teamName) {
 }
 
 function formatBracketTeamLabel(teamName) {
+  if (!teamName) return "TBD";
   const draftedBy = getOwnerTeamNameForSchool(teamName);
   return draftedBy ? `${teamName} (${draftedBy})` : teamName;
+}
+
+function getWinnerEntry(game) {
+  if (!game?.winner) return null;
+  if (normalizeName(game.winner) === normalizeName(game.teamA)) {
+    return { team: game.teamA, seed: game.seedA };
+  }
+  if (normalizeName(game.winner) === normalizeName(game.teamB)) {
+    return { team: game.teamB, seed: game.seedB };
+  }
+  return null;
+}
+
+function setMatchTeams(match, entryA, entryB) {
+  match.teamA = entryA?.team || "";
+  match.seedA = entryA?.seed ?? "";
+  match.teamB = entryB?.team || "";
+  match.seedB = entryB?.seed ?? "";
+
+  const validWinner =
+    match.winner &&
+    (normalizeName(match.winner) === normalizeName(match.teamA) ||
+      normalizeName(match.winner) === normalizeName(match.teamB));
+
+  if (!validWinner) {
+    match.winner = "";
+  }
+}
+
+function advanceWinners(games) {
+  const updated = games.map((g) => ({ ...g }));
+  const regions = ["East", "West", "South", "Midwest"];
+
+  const byRoundRegion = (round, region) =>
+    updated
+      .filter((g) => g.round === round && g.region === region)
+      .sort((a, b) => a.id - b.id);
+
+  regions.forEach((region) => {
+    const r64 = byRoundRegion("r64", region);
+    const r32 = byRoundRegion("r32", region);
+    const r16 = byRoundRegion("r16", region);
+    const r8 = byRoundRegion("r8", region);
+
+    for (let i = 0; i < r32.length; i++) {
+      const a = getWinnerEntry(r64[i * 2]);
+      const b = getWinnerEntry(r64[i * 2 + 1]);
+      setMatchTeams(r32[i], a, b);
+    }
+
+    for (let i = 0; i < r16.length; i++) {
+      const a = getWinnerEntry(r32[i * 2]);
+      const b = getWinnerEntry(r32[i * 2 + 1]);
+      setMatchTeams(r16[i], a, b);
+    }
+
+    if (r8[0]) {
+      const a = getWinnerEntry(r16[0]);
+      const b = getWinnerEntry(r16[1]);
+      setMatchTeams(r8[0], a, b);
+    }
+  });
+
+  const finalFour = updated
+    .filter((g) => g.round === "r4")
+    .sort((a, b) => a.id - b.id);
+
+  const eastWinner = getWinnerEntry(updated.find((g) => g.round === "r8" && g.region === "East"));
+  const westWinner = getWinnerEntry(updated.find((g) => g.round === "r8" && g.region === "West"));
+  const southWinner = getWinnerEntry(updated.find((g) => g.round === "r8" && g.region === "South"));
+  const midwestWinner = getWinnerEntry(updated.find((g) => g.round === "r8" && g.region === "Midwest"));
+
+  if (finalFour[0]) setMatchTeams(finalFour[0], eastWinner, westWinner);
+  if (finalFour[1]) setMatchTeams(finalFour[1], southWinner, midwestWinner);
+
+  const champ = updated.find((g) => g.round === "champ");
+  if (champ) {
+    const ff1 = getWinnerEntry(finalFour[0]);
+    const ff2 = getWinnerEntry(finalFour[1]);
+    setMatchTeams(champ, ff1, ff2);
+  }
+
+  return updated;
+}
+
+function buildResultsFromGames(games) {
+  const state = {};
+
+  initialOwners.forEach((owner) => {
+    state[owner.teamName] = {};
+    owner.picks.forEach((pick) => {
+      state[owner.teamName][pick.team] = {
+        r64: { won: false, seed: pick.seed, opponentSeed: "" },
+        r32: { won: false, seed: pick.seed, opponentSeed: "" },
+        r16: { won: false, seed: pick.seed, opponentSeed: "" },
+        r8: { won: false, seed: pick.seed, opponentSeed: "" },
+        r4: { won: false, seed: pick.seed, opponentSeed: "" },
+        champ: { won: false, seed: pick.seed, opponentSeed: "" },
+      };
+    });
+  });
+
+  games.forEach((game) => {
+    if (!game.winner) return;
+
+    const loserSeed =
+      normalizeName(game.winner) === normalizeName(game.teamA)
+        ? game.seedB
+        : normalizeName(game.winner) === normalizeName(game.teamB)
+        ? game.seedA
+        : "";
+
+    initialOwners.forEach((owner) => {
+      owner.picks.forEach((pick) => {
+        if (teamMatchesPick(pick.team, game.winner)) {
+          state[owner.teamName][pick.team][game.round] = {
+            won: true,
+            seed: pick.seed,
+            opponentSeed: loserSeed,
+          };
+        }
+      });
+    });
+  });
+
+  return state;
+}
+
+function getTeamProgress(teamName, games) {
+  const options = splitPickOptions(teamName);
+  let lastRoundReached = null;
+  let eliminated = false;
+  let appeared = false;
+
+  const orderedGames = [...games].sort(
+    (a, b) => roundOrder.indexOf(a.round) - roundOrder.indexOf(b.round)
+  );
+
+  for (const game of orderedGames) {
+    const teamA = normalizeName(game.teamA);
+    const teamB = normalizeName(game.teamB);
+
+    const isInGame = options.includes(teamA) || options.includes(teamB);
+    if (!isInGame) continue;
+
+    appeared = true;
+    lastRoundReached = game.round;
+
+    if (game.winner) {
+      const winner = normalizeName(game.winner);
+      if (!options.includes(winner)) {
+        eliminated = true;
+        break;
+      }
+    }
+  }
+
+  return { lastRoundReached, eliminated, appeared };
+}
+
+function getTeamStatusLabel(teamName, games) {
+  const progress = getTeamProgress(teamName, games);
+  if (progress.eliminated) return "Eliminated";
+  if (progress.lastRoundReached) return `Alive (${roundLabels[progress.lastRoundReached]})`;
+  if (progress.appeared) return "Alive";
+  return "Not yet in tracked games";
+}
+
+const BRACKET = {
+  boxW: 220,
+  cardH: 46,
+  gapBetweenTeams: 8,
+  matchH: 100,
+  colGap: 70,
+};
+
+function getRoundLayout(round) {
+  if (round === "r64") return [0, 120, 240, 360, 480, 600, 720, 840];
+  if (round === "r32") return [60, 300, 540, 780];
+  if (round === "r16") return [180, 660];
+  if (round === "r8") return [420];
+  return [];
+}
+
+function roundX(round) {
+  if (round === "r64") return 0;
+  if (round === "r32") return BRACKET.boxW + BRACKET.colGap;
+  if (round === "r16") return (BRACKET.boxW + BRACKET.colGap) * 2;
+  if (round === "r8") return (BRACKET.boxW + BRACKET.colGap) * 3;
+  return 0;
+}
+
+function matchCenterY(top) {
+  return top + BRACKET.cardH + BRACKET.gapBetweenTeams / 2;
 }
 
 function BracketTeamCard({ teamName, seed, isWinner, isEliminated }) {
@@ -446,8 +600,8 @@ function BracketTeamCard({ teamName, seed, isWinner, isEliminated }) {
         padding: "10px 12px",
         fontSize: 13,
         fontWeight: 600,
-        lineHeight: 1.3,
-        minHeight: 54,
+        lineHeight: 1.25,
+        height: BRACKET.cardH,
         display: "flex",
         alignItems: "center",
         opacity: isEliminated ? 0.72 : 1,
@@ -455,12 +609,16 @@ function BracketTeamCard({ teamName, seed, isWinner, isEliminated }) {
         boxSizing: "border-box",
       }}
     >
-      <div>
-        <div>{formatBracketTeamLabel(teamName)}</div>
-        <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>Seed {seed}</div>
+      <div style={{ width: "100%" }}>
+        <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {formatBracketTeamLabel(teamName)}
+        </div>
+        <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>
+          Seed {seed || "-"}
+        </div>
       </div>
 
-      {isEliminated && (
+      {isEliminated && teamName && (
         <div
           style={{
             position: "absolute",
@@ -479,11 +637,17 @@ function BracketTeamCard({ teamName, seed, isWinner, isEliminated }) {
 }
 
 function BracketMatch({ game }) {
-  const teamAEliminated = !!game.winner && normalizeName(game.winner) !== normalizeName(game.teamA);
-  const teamBEliminated = !!game.winner && normalizeName(game.winner) !== normalizeName(game.teamB);
+  const teamAEliminated =
+    !!game.winner &&
+    !!game.teamA &&
+    normalizeName(game.winner) !== normalizeName(game.teamA);
+  const teamBEliminated =
+    !!game.winner &&
+    !!game.teamB &&
+    normalizeName(game.winner) !== normalizeName(game.teamB);
 
   return (
-    <div style={{ display: "grid", gap: 8 }}>
+    <div style={{ display: "grid", gap: BRACKET.gapBetweenTeams }}>
       <BracketTeamCard
         teamName={game.teamA}
         seed={game.seedA}
@@ -500,110 +664,254 @@ function BracketMatch({ game }) {
   );
 }
 
-function buildRegionBracketGames(games, region) {
-  const r64 = games.filter((g) => g.region === region && g.round === "r64");
-  const r32 = games.filter((g) => g.region === region && g.round === "r32");
-  const r16 = games.filter((g) => g.region === region && g.round === "r16");
-  const r8 = games.filter((g) => g.region === region && g.round === "r8");
-  return { r64, r32, r16, r8 };
-}
-
-function BracketColumn({ title, games, gapTop = 0 }) {
-  return (
-    <div>
-      <div
-        style={{
-          fontSize: 12,
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-          color: "#64748b",
-          marginBottom: 10,
-          fontWeight: 700,
-        }}
-      >
-        {title}
-      </div>
-
-      <div style={{ display: "grid", gap: 18, paddingTop: gapTop }}>
-        {games.map((game) => (
-          <BracketMatch key={game.id} game={game} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function RegionBracketBoard({ region, games, isMobile }) {
-  const { r64, r32, r16, r8 } = buildRegionBracketGames(games, region);
-  const hasAnyGames = r64.length || r32.length || r16.length || r8.length;
-  if (!hasAnyGames) return null;
+  const r64 = games.filter((g) => g.round === "r64" && g.region === region).sort((a, b) => a.id - b.id);
+  const r32 = games.filter((g) => g.round === "r32" && g.region === region).sort((a, b) => a.id - b.id);
+  const r16 = games.filter((g) => g.round === "r16" && g.region === region).sort((a, b) => a.id - b.id);
+  const r8 = games.filter((g) => g.round === "r8" && g.region === region).sort((a, b) => a.id - b.id);
 
   if (isMobile) {
     return (
       <div style={cardStyle()}>
         <h3 style={{ marginTop: 0, marginBottom: 14 }}>{region}</h3>
-        <div style={{ display: "grid", gap: 18 }}>
-          {r64.length > 0 && <BracketColumn title="Round of 64" games={r64} />}
-          {r32.length > 0 && <BracketColumn title="Round of 32" games={r32} />}
-          {r16.length > 0 && <BracketColumn title="Sweet 16" games={r16} />}
-          {r8.length > 0 && <BracketColumn title="Elite 8" games={r8} />}
+        <div style={{ display: "grid", gap: 16 }}>
+          {[
+            ["r64", r64],
+            ["r32", r32],
+            ["r16", r16],
+            ["r8", r8],
+          ].map(([round, arr]) =>
+            arr.length ? (
+              <div key={round}>
+                <div
+                  style={{
+                    fontSize: 12,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    color: "#64748b",
+                    marginBottom: 8,
+                    fontWeight: 700,
+                  }}
+                >
+                  {roundLabels[round]}
+                </div>
+                <div style={{ display: "grid", gap: 10 }}>
+                  {arr.map((game) => (
+                    <BracketMatch key={game.id} game={game} />
+                  ))}
+                </div>
+              </div>
+            ) : null
+          )}
         </div>
       </div>
     );
   }
 
+  const svgW = roundX("r8") + BRACKET.boxW;
+  const svgH = 940;
+
+  const lines = [];
+
+  const addConnectionLines = (sourceRound, targetRound, sourceCountPerTarget) => {
+    const sourceYs = getRoundLayout(sourceRound);
+    const targetYs = getRoundLayout(targetRound);
+    const x1 = roundX(sourceRound) + BRACKET.boxW;
+    const x2 = roundX(targetRound);
+    const xMid = x1 + BRACKET.colGap / 2;
+
+    targetYs.forEach((targetTop, idx) => {
+      const yTarget = matchCenterY(targetTop);
+      const s1 = sourceYs[idx * sourceCountPerTarget];
+      const s2 = sourceYs[idx * sourceCountPerTarget + 1];
+
+      [s1, s2].forEach((top) => {
+        const ySource = matchCenterY(top);
+        lines.push(
+          <path
+            key={`${sourceRound}-${targetRound}-${idx}-${top}`}
+            d={`M ${x1} ${ySource} H ${xMid} V ${yTarget} H ${x2}`}
+            fill="none"
+            stroke="#cbd5e1"
+            strokeWidth="2"
+          />
+        );
+      });
+    });
+  };
+
+  addConnectionLines("r64", "r32", 2);
+  addConnectionLines("r32", "r16", 2);
+  addConnectionLines("r16", "r8", 2);
+
+  const renderRoundMatches = (round, matches) => {
+    const tops = getRoundLayout(round);
+    const x = roundX(round);
+
+    return matches.map((game, idx) => (
+      <div
+        key={game.id}
+        style={{
+          position: "absolute",
+          left: x,
+          top: tops[idx],
+          width: BRACKET.boxW,
+        }}
+      >
+        <BracketMatch game={game} />
+      </div>
+    ));
+  };
+
   return (
     <div style={cardStyle()}>
       <h3 style={{ marginTop: 0, marginBottom: 14 }}>{region}</h3>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.6fr 1.3fr 1fr .9fr",
-          gap: 18,
-          alignItems: "start",
-          overflowX: "auto",
-          minWidth: 900,
-        }}
-      >
-        {r64.length > 0 && <BracketColumn title="Round of 64" games={r64} />}
-        {r32.length > 0 && <BracketColumn title="Round of 32" games={r32} gapTop={38} />}
-        {r16.length > 0 && <BracketColumn title="Sweet 16" games={r16} gapTop={82} />}
-        {r8.length > 0 && <BracketColumn title="Elite 8" games={r8} gapTop={145} />}
+      <div style={{ overflowX: "auto" }}>
+        <div
+          style={{
+            position: "relative",
+            width: svgW,
+            height: svgH,
+          }}
+        >
+          <svg
+            width={svgW}
+            height={svgH}
+            style={{ position: "absolute", inset: 0, overflow: "visible" }}
+          >
+            {lines}
+          </svg>
+
+          {renderRoundMatches("r64", r64)}
+          {renderRoundMatches("r32", r32)}
+          {renderRoundMatches("r16", r16)}
+          {renderRoundMatches("r8", r8)}
+        </div>
       </div>
     </div>
   );
 }
 
 function FinalsBracketBoard({ games, isMobile }) {
-  const finalFourGames = games.filter((g) => g.round === "r4");
-  const champGames = games.filter((g) => g.round === "champ");
+  const r4 = games.filter((g) => g.round === "r4").sort((a, b) => a.id - b.id);
+  const champ = games.find((g) => g.round === "champ");
 
-  if (!finalFourGames.length && !champGames.length) return null;
+  if (isMobile) {
+    return (
+      <div style={cardStyle()}>
+        <h3 style={{ marginTop: 0, marginBottom: 14 }}>Final Four / Championship</h3>
+        <div style={{ display: "grid", gap: 16 }}>
+          <div>
+            <div
+              style={{
+                fontSize: 12,
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+                color: "#64748b",
+                marginBottom: 8,
+                fontWeight: 700,
+              }}
+            >
+              Final Four
+            </div>
+            <div style={{ display: "grid", gap: 10 }}>
+              {r4.map((game) => (
+                <BracketMatch key={game.id} game={game} />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div
+              style={{
+                fontSize: 12,
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+                color: "#64748b",
+                marginBottom: 8,
+                fontWeight: 700,
+              }}
+            >
+              Championship
+            </div>
+            {champ ? <BracketMatch game={champ} /> : null}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const xFF = 0;
+  const xChamp = 320;
+  const yFF = [120, 420];
+  const yChamp = 270;
+  const svgW = 560;
+  const svgH = 560;
+
+  const lines = [];
+  if (champ) {
+    const x1 = xFF + BRACKET.boxW;
+    const x2 = xChamp;
+    const xMid = x1 + (x2 - x1) / 2;
+    const yTarget = matchCenterY(yChamp);
+
+    yFF.forEach((top, idx) => {
+      if (r4[idx]) {
+        const ySource = matchCenterY(top);
+        lines.push(
+          <path
+            key={`ff-${idx}`}
+            d={`M ${x1} ${ySource} H ${xMid} V ${yTarget} H ${x2}`}
+            fill="none"
+            stroke="#cbd5e1"
+            strokeWidth="2"
+          />
+        );
+      }
+    });
+  }
 
   return (
     <div style={cardStyle()}>
       <h3 style={{ marginTop: 0, marginBottom: 14 }}>Final Four / Championship</h3>
+      <div style={{ overflowX: "auto" }}>
+        <div style={{ position: "relative", width: svgW, height: svgH }}>
+          <svg
+            width={svgW}
+            height={svgH}
+            style={{ position: "absolute", inset: 0, overflow: "visible" }}
+          >
+            {lines}
+          </svg>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1.2fr .9fr",
-          gap: 18,
-          alignItems: "start",
-        }}
-      >
-        {finalFourGames.length > 0 && (
-          <BracketColumn title="Final Four" games={finalFourGames} />
-        )}
+          {r4.map((game, idx) => (
+            <div
+              key={game.id}
+              style={{
+                position: "absolute",
+                left: xFF,
+                top: yFF[idx],
+                width: BRACKET.boxW,
+              }}
+            >
+              <BracketMatch game={game} />
+            </div>
+          ))}
 
-        {champGames.length > 0 && (
-          <BracketColumn
-            title="Championship"
-            games={champGames}
-            gapTop={isMobile ? 0 : 70}
-          />
-        )}
+          {champ ? (
+            <div
+              style={{
+                position: "absolute",
+                left: xChamp,
+                top: yChamp,
+                width: BRACKET.boxW,
+              }}
+            >
+              <BracketMatch game={champ} />
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );
@@ -614,7 +922,7 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [selectedTeam, setSelectedTeam] = useState(initialOwners[0].teamName);
   const [viewMode, setViewMode] = useState("public");
-  const [games, setGames] = useState(defaultGames);
+  const [games, setGames] = useState(() => advanceWinners(defaultGames));
   const [trashTalkText, setTrashTalkText] = useState("");
   const [trashTalkEntries, setTrashTalkEntries] = useState(defaultTrashTalk);
   const [lastUpdated, setLastUpdated] = useState("");
@@ -635,14 +943,14 @@ export default function App() {
 
       if (shared) {
         const decoded = decodeState(shared);
-        if (decoded?.games) setGames(decoded.games);
+        if (decoded?.games) setGames(advanceWinners(decoded.games));
         if (decoded?.trashTalkEntries) setTrashTalkEntries(decoded.trashTalkEntries);
         if (decoded?.lastUpdated) setLastUpdated(decoded.lastUpdated);
       } else {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const saved = JSON.parse(raw);
-          if (saved.games) setGames(saved.games);
+          if (saved.games) setGames(advanceWinners(saved.games));
           if (saved.viewMode) setViewMode(saved.viewMode);
           if (saved.trashTalkEntries) setTrashTalkEntries(saved.trashTalkEntries);
           if (saved.lastUpdated) setLastUpdated(saved.lastUpdated);
@@ -684,7 +992,8 @@ export default function App() {
         }, {});
 
         const hasChampion =
-          championSchool && owner.picks.some((pick) => teamMatchesPick(pick.team, championSchool));
+          championSchool &&
+          owner.picks.some((pick) => teamMatchesPick(pick.team, championSchool));
 
         const finalFourPoints =
           byRound.r64 + byRound.r32 + byRound.r16 + byRound.r8 + byRound.r4;
@@ -720,19 +1029,22 @@ export default function App() {
 
   function updateGameWinner(gameId, winner) {
     if (isLocked) return;
-    setGames((prev) =>
-      prev.map((game) =>
+
+    setGames((prev) => {
+      const updated = prev.map((game) =>
         game.id === gameId
           ? { ...game, winner: game.winner === winner ? "" : winner }
           : game
-      )
-    );
+      );
+      return advanceWinners(updated);
+    });
+
     stampUpdate();
   }
 
   function resetAll() {
     if (isLocked) return;
-    setGames(defaultGames);
+    setGames(advanceWinners(defaultGames));
     setTrashTalkEntries(defaultTrashTalk);
     stampUpdate();
   }
@@ -810,7 +1122,15 @@ export default function App() {
             }}
           >
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  alignItems: "center",
+                  marginBottom: 10,
+                  flexWrap: "wrap",
+                }}
+              >
                 <span style={{ fontSize: isMobile ? 24 : 28 }}>🏀</span>
                 <span
                   style={{
@@ -848,10 +1168,22 @@ export default function App() {
                 </span>
               </div>
 
-              <h1 style={{ margin: "0 0 8px", fontSize: isMobile ? 24 : 34, lineHeight: 1.15 }}>
+              <h1
+                style={{
+                  margin: "0 0 8px",
+                  fontSize: isMobile ? 24 : 34,
+                  lineHeight: 1.15,
+                }}
+              >
                 March Madness Tourney Dashboard
               </h1>
-              <p style={{ margin: 0, color: "#475569", fontSize: isMobile ? 14 : 16 }}>
+              <p
+                style={{
+                  margin: 0,
+                  color: "#475569",
+                  fontSize: isMobile ? 14 : 16,
+                }}
+              >
                 Click winners manually and let the tracker calculate the scoring.
               </p>
               <div style={{ marginTop: 10, fontSize: 14, color: "#475569" }}>
@@ -871,7 +1203,9 @@ export default function App() {
             >
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Buy-in</div>
-                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>$200</div>
+                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>
+                  $200
+                </div>
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Games tracked</div>
@@ -881,7 +1215,9 @@ export default function App() {
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Scoring formula</div>
-                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>Round + upset</div>
+                <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700 }}>
+                  Round + upset
+                </div>
               </div>
               <div style={cardStyle()}>
                 <div style={{ fontSize: 12, color: "#64748b" }}>Champion holder</div>
@@ -932,7 +1268,9 @@ export default function App() {
               }}
             >
               <div style={cardStyle()}>
-                <div style={{ fontSize: 13, color: "#64748b" }}>How upset scoring works</div>
+                <div style={{ fontSize: 13, color: "#64748b" }}>
+                  How upset scoring works
+                </div>
                 <div style={{ fontSize: 20, fontWeight: 700, marginTop: 6 }}>
                   Round points + seed difference
                 </div>
@@ -946,7 +1284,8 @@ export default function App() {
                   Champion holder wins tie
                 </div>
                 <div style={{ fontSize: 14, color: "#475569", marginTop: 6 }}>
-                  If neither tied team has the champ, highest points through Final Four wins.
+                  If neither tied team has the champ, highest points through Final
+                  Four wins.
                 </div>
               </div>
               <div style={cardStyle()}>
@@ -1001,16 +1340,36 @@ export default function App() {
                 <table style={{ width: "100%", minWidth: 900, borderCollapse: "collapse" }}>
                   <thead>
                     <tr style={{ color: "#64748b", textAlign: "left" }}>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Rank</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Owners</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Team</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>64</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>32</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>16</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>8</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>4</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Champ</th>
-                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>Total</th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        Rank
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        Owners
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        Team
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        64
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        32
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        16
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        8
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        4
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        Champ
+                      </th>
+                      <th style={{ padding: "10px 8px", borderBottom: "1px solid #e5e7eb" }}>
+                        Total
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1020,14 +1379,30 @@ export default function App() {
                           {index === 0 ? "👑 " : index < 3 ? "🏅 " : ""}
                           {index + 1}
                         </td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.owners}</td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.teamName}</td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r64}</td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r32}</td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r16}</td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r8}</td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.r4}</td>
-                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>{owner.byRound.champ}</td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          {owner.owners}
+                        </td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          {owner.teamName}
+                        </td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          {owner.byRound.r64}
+                        </td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          {owner.byRound.r32}
+                        </td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          {owner.byRound.r16}
+                        </td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          {owner.byRound.r8}
+                        </td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          {owner.byRound.r4}
+                        </td>
+                        <td style={{ padding: "12px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          {owner.byRound.champ}
+                        </td>
                         <td
                           style={{
                             padding: "12px 8px",
@@ -1086,7 +1461,9 @@ export default function App() {
                     return (
                       <div key={pick.team} style={teamRowStyle(progress.eliminated)}>
                         <div style={{ minWidth: 0, flex: 1 }}>
-                          <div style={{ fontWeight: 600, wordBreak: "break-word" }}>{pick.team}</div>
+                          <div style={{ fontWeight: 600, wordBreak: "break-word" }}>
+                            {pick.team}
+                          </div>
                           <div style={{ fontSize: 12, color: "#64748b" }}>
                             Seed {pick.seed} • {getTeamStatusLabel(pick.team, games)}
                           </div>
@@ -1115,7 +1492,14 @@ export default function App() {
               <h2 style={{ marginTop: 0 }}>Manual Winner Entry</h2>
 
               {roundOrder.map((round) => {
-                const roundGames = games.filter((game) => game.round === round);
+                const roundGames = games
+                  .filter(
+                    (game) =>
+                      game.round === round &&
+                      (game.teamA || game.teamB || round === "champ" || round === "r4")
+                  )
+                  .sort((a, b) => a.id - b.id);
+
                 if (!roundGames.length) return null;
 
                 return (
@@ -1143,7 +1527,13 @@ export default function App() {
                             flexWrap: "wrap",
                           }}
                         >
-                          <div style={{ fontSize: 12, textTransform: "uppercase", color: "#64748b" }}>
+                          <div
+                            style={{
+                              fontSize: 12,
+                              textTransform: "uppercase",
+                              color: "#64748b",
+                            }}
+                          >
                             {game.region}
                           </div>
                           <div
@@ -1166,29 +1556,35 @@ export default function App() {
                           }}
                         >
                           <button
-                            disabled={isLocked}
+                            disabled={isLocked || !game.teamA}
                             onClick={() => updateGameWinner(game.id, game.teamA)}
                             style={{
                               ...buttonStyle(game.winner === game.teamA, isMobile),
-                              cursor: isLocked ? "not-allowed" : "pointer",
-                              opacity: isLocked ? 0.7 : 1,
+                              cursor:
+                                isLocked || !game.teamA ? "not-allowed" : "pointer",
+                              opacity: isLocked || !game.teamA ? 0.7 : 1,
                             }}
                           >
-                            <div style={{ fontSize: 12, opacity: 0.8 }}>Seed {game.seedA}</div>
-                            <div>{game.teamA}</div>
+                            <div style={{ fontSize: 12, opacity: 0.8 }}>
+                              Seed {game.seedA || "-"}
+                            </div>
+                            <div>{game.teamA || "TBD"}</div>
                           </button>
 
                           <button
-                            disabled={isLocked}
+                            disabled={isLocked || !game.teamB}
                             onClick={() => updateGameWinner(game.id, game.teamB)}
                             style={{
                               ...buttonStyle(game.winner === game.teamB, isMobile),
-                              cursor: isLocked ? "not-allowed" : "pointer",
-                              opacity: isLocked ? 0.7 : 1,
+                              cursor:
+                                isLocked || !game.teamB ? "not-allowed" : "pointer",
+                              opacity: isLocked || !game.teamB ? 0.7 : 1,
                             }}
                           >
-                            <div style={{ fontSize: 12, opacity: 0.8 }}>Seed {game.seedB}</div>
-                            <div>{game.teamB}</div>
+                            <div style={{ fontSize: 12, opacity: 0.8 }}>
+                              Seed {game.seedB || "-"}
+                            </div>
+                            <div>{game.teamB || "TBD"}</div>
                           </button>
                         </div>
                       </div>
@@ -1208,15 +1604,13 @@ export default function App() {
                 Lock mode: <strong>{isLocked ? "On" : "Off"}</strong>
               </div>
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 10 }) }}>
-                Scoring formula: round base points + (winning seed number - losing seed number) when the underdog wins.
+                Later rounds auto-fill from earlier winners.
               </div>
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 10 }) }}>
-                Correct example: 12 over 5 in Round 1 = 2 base points + 7 upset bonus = 9 total points.
+                If you change an earlier winner, invalid downstream winners are cleared automatically.
               </div>
               <div style={{ ...cardStyle({ background: "#f8fafc", marginBottom: 16 }) }}>
-                {isLocked
-                  ? "This shared link is locked. View-only mode is active."
-                  : "Click the selected winner again to clear that game."}
+                Correct example: 12 over 5 in Round 1 = 2 base points + 7 upset bonus = 9 total points.
               </div>
 
               <div
@@ -1233,7 +1627,10 @@ export default function App() {
                 <button onClick={() => generateShareLink(true)} style={buttonStyle(false, isMobile)}>
                   Generate Share Link
                 </button>
-                <button onClick={() => generateShareLink(false)} style={buttonStyle(false, isMobile)}>
+                <button
+                  onClick={() => generateShareLink(false)}
+                  style={buttonStyle(false, isMobile)}
+                >
                   Generate Editable Link
                 </button>
                 <button
@@ -1255,15 +1652,21 @@ export default function App() {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr",
+                  gridTemplateColumns: "1fr 1fr",
                   gap: 10,
                   marginBottom: 16,
                 }}
               >
-                <button onClick={() => setViewMode("public")} style={buttonStyle(viewMode === "public", isMobile)}>
+                <button
+                  onClick={() => setViewMode("public")}
+                  style={buttonStyle(viewMode === "public", isMobile)}
+                >
                   Public
                 </button>
-                <button onClick={() => setViewMode("admin")} style={buttonStyle(viewMode === "admin", isMobile)}>
+                <button
+                  onClick={() => setViewMode("admin")}
+                  style={buttonStyle(viewMode === "admin", isMobile)}
+                >
                   Admin
                 </button>
               </div>
@@ -1274,14 +1677,20 @@ export default function App() {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr",
+                      gridTemplateColumns: "1fr 1fr",
                       gap: 10,
                     }}
                   >
-                    <button onClick={() => setIsLocked(false)} style={buttonStyle(!isLocked, isMobile)}>
+                    <button
+                      onClick={() => setIsLocked(false)}
+                      style={buttonStyle(!isLocked, isMobile)}
+                    >
                       Unlocked
                     </button>
-                    <button onClick={() => setIsLocked(true)} style={buttonStyle(isLocked, isMobile)}>
+                    <button
+                      onClick={() => setIsLocked(true)}
+                      style={buttonStyle(isLocked, isMobile)}
+                    >
                       Locked
                     </button>
                   </div>
@@ -1306,7 +1715,7 @@ export default function App() {
                 <div>
                   <h2 style={{ margin: 0 }}>Bracket Map</h2>
                   <div style={{ color: "#475569", marginTop: 6, fontSize: 14 }}>
-                    NCAA teams are shown with the drafted pool team in parentheses.
+                    Teams show the drafted pool team in parentheses. Lines connect rounds automatically.
                   </div>
                 </div>
 
@@ -1496,6 +1905,8 @@ export default function App() {
                 }}
               >
                 {[
+                  "Auto-advancing bracket",
+                  "Bracket lines on Bracket Map",
                   "Clear upset-scoring examples",
                   "Manual winner tracking",
                   "Automatic standings recalculation",
@@ -1506,8 +1917,6 @@ export default function App() {
                   "Last updated time",
                   "Lock mode for view-only sharing",
                   "Mobile-friendly layout",
-                  "Bracket Map page",
-                  "Trash-talk submission and voting",
                 ].map((item) => (
                   <div
                     key={item}
